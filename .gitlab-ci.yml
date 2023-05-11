@@ -4,9 +4,6 @@ cache:
 
 install_deps:
   stage: prepare
-  tags:
-    - shell
-    - ci
   script:
     - yarn
   only:
@@ -18,9 +15,6 @@ lint:
   stage: lint
   needs:
     - job: install_deps
-  tags:
-    - shell
-    - ci
   script:
     - yarn lint
   only:
@@ -29,9 +23,6 @@ lint:
 
 build:
   stage: build
-  tags:
-    - shell
-    - ci
   script:
     - yarn build
   only:
@@ -41,9 +32,6 @@ build:
 
 deploy_functions:
   stage: deploy
-  tags:
-    - shell
-    - cd
   dependencies:
     - build
   script:
@@ -54,9 +42,6 @@ deploy_functions:
 
 deploy_configs:
   stage: deploy
-  tags:
-    - shell
-    - cd
   dependencies:
     - build
   script:
