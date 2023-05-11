@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+      function isAuthenticatedWithUid(uid){
+        return (request.auth!=null && request.auth.uid==uid)
+      }
+      function hasRoles(roles){
+        return request.auth.token.roles.hasAll(roles);
+      }
+    match /users/{userId} {
+      allow read: if isAuthenticatedWithUid(userId) || hasRoles(['admin']);
+      match /tmp/{imageId} {
+        allow read,write: if isAuthenticatedWithUid(userId);
+      }
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

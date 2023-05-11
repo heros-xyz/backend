@@ -1,0 +1,74 @@
+cache:
+  paths:
+    - node_modules/
+
+install_deps:
+  stage: prepare
+  tags:
+    - shell
+    - ci
+  script:
+    - yarn
+  only:
+    refs:
+      - merge_requests
+      - develop
+
+lint:
+  stage: lint
+  needs:
+    - job: install_deps
+  tags:
+    - shell
+    - ci
+  script:
+    - yarn lint
+  only:
+    refs:
+      - merge_requests
+
+build:
+  stage: build
+  tags:
+    - shell
+    - ci
+  script:
+    - yarn build
+  only:
+    refs:
+      - merge_requests
+
+
+deploy_functions:
+  stage: deploy
+  tags:
+    - shell
+    - cd
+  dependencies:
+    - build
+  script:
+    - firebase deploy --only functions --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT"
+  only:
+    refs:
+      - develop
+
+deploy_configs:
+  stage: deploy
+  tags:
+    - shell
+    - cd
+  dependencies:
+    - build
+  script:
+    - firebase deploy --except functions --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT"
+  only:
+    refs:
+      - develop
+
+stages:
+  - prepare
+  - lint
+  - build
+  - test
+  - coverage
+  - deploy

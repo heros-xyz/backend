@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated(){
+      return request.auth!=null
+    }
+    function isAuthenticatedWithUid(uid){
+      return (isAuthenticated() && request.auth.uid==uid)
+    }
+    function hasAnyRoles(roles){
+      return request.auth.token.roles.hasAny(roles);
+    }
+    function onlyUpdateFields(fields){
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields)
+    }
+    // Public
+    match /public/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+    // Default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

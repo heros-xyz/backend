@@ -1,0 +1,21 @@
+{
+  "functions": {
+    "source": ".",
+    "predeploy": "npm run build"
+  },
+  "firestore": {
+    "rules": "configs/firestore.rules",
+    "indexes": "configs/firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "configs/storage.rules"
+  },
+  "emulators": {
+    "storage":   {"port": 9199, "host": "0.0.0.0"},
+    "auth":      {"port": 9099, "host": "0.0.0.0"},
+    "functions": {"port": 5001, "host": "0.0.0.0"},
+    "firestore": {"port": 8080, "host": "0.0.0.0"},
+    "ui":        {"port": 4000, "host": "0.0.0.0", "enabled": true},
+    "pubsub":    {"port": 8085, "host": "0.0.0.0"}
+  }
+}
