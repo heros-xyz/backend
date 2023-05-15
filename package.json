@@ -5,13 +5,16 @@
   "scripts": {
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --ext .ts . --fix",
+    "test": "mocha --require ts-node/register **/*.test.ts",
+    "test:watch": "mocha --require ts-node/register **/*.test.ts -w",
     "build": "tsc",
     "watch": "tsc -w",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "emulators": "firebase emulators:start --only auth,firestore,functions,hosting,pubsub,storage --inspect-functions --import=./data-path --export-on-exit --project heros-dev-386505"
   },
   "engines": {
     "node": "18"
@@ -24,19 +27,24 @@
     "ejs": "^3.1.6",
     "firebase-admin": "^11.5.0",
     "firebase-functions": "^4.1.1",
-    "speakeasy": "^2.0.0"
+    "speakeasy": "^2.0.0",
+    "stripe": "^12.5.0"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.1",
     "@types/speakeasy": "^2.0.7",
     "@typescript-eslint/eslint-plugin": "^3.9.1",
     "@typescript-eslint/parser": "^3.8.0",
     "@typescript-eslint/typescript-estree": "^5.48.1",
+    "chai": "^4.3.7",
     "eslint": "^7.6.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.26.0",
-    "firebase-functions-test": "^0.2.0",
+    "firebase-functions-test": "^3.1.0",
     "fireway": "^1.1.0",
+    "mocha": "^10.2.0",
     "readline": "^1.3.0",
+    "sinon": "^15.0.4",
     "ts-node": "^10.9.1",
     "typescript": "^4.3.5"
   }
