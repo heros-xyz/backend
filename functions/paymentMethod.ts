@@ -19,17 +19,31 @@ interface PaymentAfter {
 exports.createPaymentMethods = functions.firestore.document("paymentMethods/{docId}").onCreate(async (change) => {
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
     const data = change.data() as PaymentBefore
+    if (!data.uid) return
     const userDoc = await admin.firestore().doc(`user/${data.uid}`).get()
     if (!userDoc || !userDoc.data()) return
     const customer = userDoc?.data()?.stripeCustomer
-    const paymentMethod = await stripe.paymentMethods.create({
-        customer,
+    console.log({
+        type: "card",
+        customer: customer.id,
         card: {
             number: data.cardNumber,
             cvc: data.cardCvc,
             exp_month: data.cardExpMonth,
             exp_year: data.cardExpYear
         }
+    })
+    const paymentMethod = await stripe.paymentMethods.create({
+        type: "card",
+        customer: customer.id,
+        card: {
+            number: data.cardNumber,
+            cvc: data.cardCvc,
+            exp_month: data.cardExpMonth,
+            exp_year: data.cardExpYear
+        }
+    }, {
+        idempotencyKey: `payment_create_${change.id}`
     })
     return change.ref.update({
         stripePayment: paymentMethod,
@@ -41,5 +55,7 @@ exports.deletePaymentMethod = functions.firestore.document("paymentMethods/{docI
     const data = change.data() as PaymentAfter
     if (!data.stripePayment) return
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
-    return stripe.paymentMethods.detach(data.stripePayment)
+    return stripe.paymentMethods.detach(data.stripePayment, {
+        idempotencyKey: `payment_detach_${change.id}`
+    })
 })

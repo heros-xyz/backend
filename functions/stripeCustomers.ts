@@ -11,6 +11,8 @@ export const onUserCreate = functions.auth.user().onCreate(async ({email, uid}) 
         const customer = await stripe.customers.create({
             email: email,
             metadata: { firebaseUID: uid },
+        }, {
+            idempotencyKey: `user_create_${uid}`
         });
         await admin.firestore()
             .collection("user")
