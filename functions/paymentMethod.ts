@@ -18,7 +18,7 @@ interface PaymentAfter {
 
 exports.syncPaymentMethods = functions.firestore.document("paymentMethods/{docId}").onWrite(async (change) => {
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
-    if (!change.before) { //Creando
+    if (!change.before.data()) { //Creando
         const data = change.after.data() as PaymentBefore
         const userDoc = await admin.firestore().doc(`user/${data.uid}`).get()
         if (!userDoc || !userDoc.data()) return
@@ -36,7 +36,7 @@ exports.syncPaymentMethods = functions.firestore.document("paymentMethods/{docId
             stripePayment: paymentMethod,
             ...paymentMethod
         })
-    } else if (!change.after) {//Eliminando
+    } else if (!change.after.data()) {//Eliminando
         const data = change.before.data() as PaymentAfter
         return stripe.paymentMethods.detach(data.stripePayment)
     } else {

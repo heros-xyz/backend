@@ -18,7 +18,7 @@ export interface MembershipTier {
 
 exports.syncMembershipTiersWithStripe = functions.firestore.document("membershipTiers/{docId}").onWrite(async (change, context) => {
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
-    if (!change.before) { //Creando
+    if (!change.before.data()) { //Creando
         const data =  change.after.data() as MembershipTier
         const product = await stripe.products.create({
             id: change.after.id,
@@ -40,7 +40,7 @@ exports.syncMembershipTiersWithStripe = functions.firestore.document("membership
             stripeProduct: product.id,
             stripePrice: price.id,
         })
-    } else if (!change.after) {//Eliminando
+    } else if (!change.after.data()) {//Eliminando
         const data =  change.before.data() as MembershipTier
         await stripe.prices.update(data.stripePrice as string,{
             active: false,
