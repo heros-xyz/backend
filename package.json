@@ -12,7 +12,7 @@
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "firebase deploy --only functions --project heros-dev-386505",
     "logs": "firebase functions:log",
     "emulators": "firebase emulators:start --only auth,firestore,functions,hosting,pubsub,storage --inspect-functions --import=./data-path --export-on-exit --project heros-dev-386505"
   },

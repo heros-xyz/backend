@@ -4,3 +4,4 @@ admin.initializeApp();
 
 exports.auth = require("./auth");
 exports.stripeCustomers = require("./stripeCustomers");
+exports.membershipTiers = require("./membershipTiers");
