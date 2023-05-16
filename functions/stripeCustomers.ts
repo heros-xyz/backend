@@ -13,9 +13,9 @@ export const onUserCreate = functions.auth.user().onCreate(async ({email, uid}) 
             metadata: { firebaseUID: uid },
         });
         await admin.firestore()
-            .collection("stripeCustomers")
+            .collection("user")
             .doc(uid)
-            .set({ customerId: customer.id }, {merge: true});
+            .update({ stripeCustomer: customer.id });
     } catch (error) {
         console.error("Error al crear el cliente de Stripe", error);
     }

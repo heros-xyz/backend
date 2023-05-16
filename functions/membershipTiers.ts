@@ -16,7 +16,7 @@ export interface MembershipTier {
     uid: string
 }
 
-exports.addMembershipTier = functions.firestore.document("membershipTiers/{docId}").onWrite(async (change, context) => {
+exports.syncMembershipTiersWithStripe = functions.firestore.document("membershipTiers/{docId}").onWrite(async (change, context) => {
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
     if (!change.before) { //Creando
         const data =  change.after.data() as MembershipTier

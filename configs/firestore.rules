@@ -22,6 +22,14 @@ service cloud.firestore {
           allow read:  if isAuthenticated();
           allow write: if isAuthenticatedWithUid(resource.data.uid) && !request.resource.data.keys().hasAll(['stripeProduct', 'stripePrice']);
     }
+    match /paymentMethods/{document=**} {
+          allow read:  if isAuthenticatedWithUid(resource.data.uid);
+          allow write: if isAuthenticatedWithUid(resource.data.uid) && !request.resource.data.keys().hasAll(['stripePayment']);
+    }
+    match /user/{uid} {
+          allow read:  if isAuthenticatedWithUid(uid);
+          allow write: if isAuthenticatedWithUid(uid) && !request.resource.data.keys().hasAll(['stripeCustomer']);
+    }
     // Default
     match /{document=**} {
       allow read, write: if true;
