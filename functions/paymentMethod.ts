@@ -16,30 +16,29 @@ interface PaymentAfter {
     uid: string
 }
 
-exports.syncPaymentMethods = functions.firestore.document("paymentMethods/{docId}").onWrite(async (change) => {
+exports.createPaymentMethods = functions.firestore.document("paymentMethods/{docId}").onCreate(async (change) => {
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
-    if (!change.before.data()) { //Creando
-        const data = change.after.data() as PaymentBefore
-        const userDoc = await admin.firestore().doc(`user/${data.uid}`).get()
-        if (!userDoc || !userDoc.data()) return
-        const customer = userDoc?.data()?.stripeCustomer
-        const paymentMethod = await stripe.paymentMethods.create({
-            customer,
-            card: {
-                number: data.cardNumber,
-                cvc: data.cardCvc,
-                exp_month: data.cardExpMonth,
-                exp_year: data.cardExpYear
-            }
-        }, {})
-        return change.after.ref.update({
-            stripePayment: paymentMethod,
-            ...paymentMethod
-        })
-    } else if (!change.after.data()) {//Eliminando
-        const data = change.before.data() as PaymentAfter
-        return stripe.paymentMethods.detach(data.stripePayment)
-    } else {
-        return
-    }
+    const data = change.data() as PaymentBefore
+    const userDoc = await admin.firestore().doc(`user/${data.uid}`).get()
+    if (!userDoc || !userDoc.data()) return
+    const customer = userDoc?.data()?.stripeCustomer
+    const paymentMethod = await stripe.paymentMethods.create({
+        customer,
+        card: {
+            number: data.cardNumber,
+            cvc: data.cardCvc,
+            exp_month: data.cardExpMonth,
+            exp_year: data.cardExpYear
+        }
+    }, {})
+    return change.ref.update({
+        stripePayment: paymentMethod,
+        ...paymentMethod
+    })
+})
+
+exports.deletePaymentMethod = functions.firestore.document("paymentMethods/{docId}").onDelete((change)=>{
+    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
+    const data = change.data() as PaymentAfter
+    return stripe.paymentMethods.detach(data.stripePayment)
 })
