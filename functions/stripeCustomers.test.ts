@@ -1,14 +1,17 @@
 import {test} from "./index.test"
 import {it} from "mocha";
-import {stripeCustomer} from "./index";
 import * as admin from "firebase-admin";
-import * as sinon from "sinon"
+import * as sinon from "sinon";
 
-sinon.stub(admin, "initializeApp");
-admin.initializeApp({
-    projectId: "heros-dev-386505",
-})
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const stripeCustomer = require("./stripeCustomers");
 describe("stripeCustomer", () => {
+    before(()=>{
+        sinon.stub(admin, "initializeApp");
+        admin.initializeApp({
+            projectId: "heros-dev-386505",
+        })
+    })
     it("Se crea el usuario nuevo", async ()=> {
         const timestamp = Date.now()
         const wrapped = test.wrap(stripeCustomer.onUserCreate);
