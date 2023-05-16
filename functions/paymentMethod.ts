@@ -30,7 +30,7 @@ exports.createPaymentMethods = functions.firestore.document("paymentMethods/{doc
             exp_month: data.cardExpMonth,
             exp_year: data.cardExpYear
         }
-    }, {})
+    })
     return change.ref.update({
         stripePayment: paymentMethod,
         ...paymentMethod
@@ -38,7 +38,8 @@ exports.createPaymentMethods = functions.firestore.document("paymentMethods/{doc
 })
 
 exports.deletePaymentMethod = functions.firestore.document("paymentMethods/{docId}").onDelete((change)=>{
-    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
     const data = change.data() as PaymentAfter
+    if (!data.stripePayment) return
+    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
     return stripe.paymentMethods.detach(data.stripePayment)
 })
