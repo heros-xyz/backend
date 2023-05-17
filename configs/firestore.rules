@@ -7,11 +7,14 @@ service cloud.firestore {
     function isAuthenticatedWithUid(uid){
       return (isAuthenticated() && request.auth.uid==uid)
     }
+    function isAuthenticatedWithUids(uids){
+      return request.auth.uid in uids
+    }
     function hasAnyRoles(roles){
       return request.auth.token.roles.hasAny(roles);
     }
     function onlyUpdateFields(fields){
-        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields)
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields)
     }
     // Public
     match /public/{document=**} {
@@ -19,16 +22,23 @@ service cloud.firestore {
       allow write: if false;
     }
     match /membershipTiers/{document=**} {
-          allow read:  if isAuthenticated();
-          allow write: if isAuthenticatedWithUid(resource.data.uid) && !request.resource.data.keys().hasAll(['stripeProduct', 'stripePrice']);
+      allow read:  if isAuthenticated();
+      allow write: if isAuthenticatedWithUid(resource.data.uid) && !request.resource.data.keys().hasAll(['stripeProduct', 'stripePrice']);
     }
+    // Private
     match /paymentMethods/{document=**} {
-          allow read:  if isAuthenticatedWithUid(resource.data.uid);
-          allow write: if isAuthenticatedWithUid(resource.data.uid) && !request.resource.data.keys().hasAll(['stripePayment']);
+      allow read:  if isAuthenticatedWithUid(resource.data.uid);
+      allow write: if isAuthenticatedWithUid(resource.data.uid) && !request.resource.data.keys().hasAll(['stripePayment']);
     }
     match /user/{uid} {
-          allow read:  if isAuthenticatedWithUid(uid);
-          allow write: if isAuthenticatedWithUid(uid) && !request.resource.data.keys().hasAll(['stripeCustomer']);
+      allow read:  if isAuthenticatedWithUid(uid);
+      allow write: if isAuthenticatedWithUid(uid) && !request.resource.data.keys().hasAll(['stripeCustomer']);
+    }
+    match /suscriptionDoc/{id}{
+      allow read:  if isAuthenticatedWithUids(resource.data.maker,resource.data.taker);
+    }
+    match /withdrawalRequest/{id}{
+      allow read, create: if isAuthenticatedWithUid(resource.data.uid);
     }
     // Default
     match /{document=**} {

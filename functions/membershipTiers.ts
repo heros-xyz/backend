@@ -16,7 +16,9 @@ export interface MembershipTier {
     uid: string
 }
 
-exports.createMembershipTiers = functions.firestore.document("membershipTiers/{docId}").onCreate(async (change) => {
+const baseRef = functions.firestore.document("membershipTiers/{docId}")
+
+exports.create = baseRef.onCreate(async (change) => {
     const data = change.data() as MembershipTier
     let product: Stripe.Response<Stripe.Product>|undefined
     let price: Stripe.Response<Stripe.Price>|undefined
@@ -47,7 +49,7 @@ exports.createMembershipTiers = functions.firestore.document("membershipTiers/{d
     })
 })
 
-exports.updateMembershipTiers = functions.firestore.document("membershipTiers/{docId}").onUpdate(async (change) => {
+exports.update = baseRef.onUpdate(async (change) => {
     const dataBefore =  change.before.data() as MembershipTier
     const dataAfter =  change.after.data() as MembershipTier
     if (!dataAfter.stripeProduct) return
@@ -75,7 +77,7 @@ exports.updateMembershipTiers = functions.firestore.document("membershipTiers/{d
 
 });
 
-exports.deleteMembershipTiers = functions.firestore.document("membershipTiers/{docId}").onDelete(async (change) => {
+exports.delete = baseRef.onDelete(async (change) => {
     const data =  change.data() as MembershipTier
     if(!data.stripeProduct) return
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});

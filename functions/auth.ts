@@ -5,6 +5,12 @@ import * as functions2 from "firebase-functions/v2";
 import * as speakeasy from "speakeasy";
 import * as sgMail from "@sendgrid/mail";
 
+export interface User {
+    email: string
+    profileType: "FAN" | "ATHLETE" | "ADMIN"
+    stripeCustomer: string
+}
+
 async function sendEmail(email: string, secret: string) {
     //TODO: Mover esto a secrets
     sgMail.setApiKey("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");

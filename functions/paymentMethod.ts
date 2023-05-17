@@ -3,7 +3,7 @@ import * as functions from "firebase-functions";
 import Stripe from "stripe";
 
 const stripeSecret  = "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw"
-interface PaymentBefore {
+interface PrePaymentMethod {
     cardName: string
     cardNumber: string
     cardExpMonth: number
@@ -11,20 +11,23 @@ interface PaymentBefore {
     cardCvc: string
     uid: string
 }
-interface PaymentAfter {
+export interface PaymentMethod {
     stripePayment?: string
     error?: string
     uid: string
 }
 
-exports.createPaymentMethods = functions.firestore.document("paymentMethods/{docId}").onCreate(async (change) => {
-    const data = change.data() as PaymentBefore
+const ref = functions.firestore.document("paymentMethods/{docId}")
+
+exports.create = ref.onCreate(async (change) => {
+    const data = change.data() as PrePaymentMethod
     if (!data.uid) return
     const userDoc = await admin.firestore().doc(`user/${data.uid}`).get()
     if (!userDoc || !userDoc.data()) return
     const customer = userDoc?.data()?.stripeCustomer
     if(!customer) return
     let paymentMethod: Stripe.Response<Stripe.PaymentMethod>|undefined
+    let error:string|undefined
     try {
         const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
         paymentMethod = await stripe.paymentMethods.create({
@@ -42,18 +45,20 @@ exports.createPaymentMethods = functions.firestore.document("paymentMethods/{doc
         })
 
         paymentMethod = await stripe.paymentMethods.retrieve(paymentMethod.id)
-    } catch (e) {
+    } catch (e: any) {
         console.error("createPaymentMethods", e)
+        error = e.message
     }
 
     return change.ref.set({
         stripePayment: paymentMethod,
         uid: data.uid,
+        error,
     })
 })
 
-exports.deletePaymentMethod = functions.firestore.document("paymentMethods/{docId}").onDelete((change)=>{
-    const data = change.data() as PaymentAfter
+exports.delete = ref.onDelete((change)=>{
+    const data = change.data() as PaymentMethod
     if (!data.stripePayment) return
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
     return stripe.paymentMethods.detach(data.stripePayment, {
