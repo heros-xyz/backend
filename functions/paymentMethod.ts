@@ -23,31 +23,22 @@ exports.createPaymentMethods = functions.firestore.document("paymentMethods/{doc
     const userDoc = await admin.firestore().doc(`user/${data.uid}`).get()
     if (!userDoc || !userDoc.data()) return
     const customer = userDoc?.data()?.stripeCustomer
-    console.log({
-        type: "card",
-        customer: customer.id,
-        card: {
-            number: data.cardNumber,
-            cvc: data.cardCvc,
-            exp_month: data.cardExpMonth,
-            exp_year: data.cardExpYear
-        }
-    })
+    if(!customer) return
     const paymentMethod = await stripe.paymentMethods.create({
         type: "card",
-        customer: customer.id,
         card: {
             number: data.cardNumber,
             cvc: data.cardCvc,
             exp_month: data.cardExpMonth,
             exp_year: data.cardExpYear
         }
-    }, {
-        idempotencyKey: `payment_create_${change.id}`
     })
-    return change.ref.update({
+    await stripe.paymentMethods.attach(paymentMethod.id, {
+        customer
+    })
+    return change.ref.set({
         stripePayment: paymentMethod,
-        ...paymentMethod
+        uid: data.uid,
     })
 })
 
