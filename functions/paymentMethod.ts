@@ -4,7 +4,6 @@ import Stripe from "stripe";
 
 const stripeSecret  = "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw"
 interface PrePaymentMethod {
-    cardName: string
     cardNumber: string
     cardExpMonth: number
     cardExpYear: number
@@ -12,7 +11,7 @@ interface PrePaymentMethod {
     uid: string
 }
 export interface PaymentMethod {
-    stripePayment?: string
+    stripePayment: Stripe.Response<Stripe.PaymentMethod>
     error?: string
     uid: string
 }
@@ -50,10 +49,7 @@ exports.create = ref.onCreate(async (change) => {
     ).catch(async (error: Error) => {
         console.error("createPaymentMethods", error);
         return change.ref.update({
-            error: {
-                name: error.name,
-                message: error.message,
-            }
+            error: error.message
         })
     })
 })
@@ -62,7 +58,7 @@ exports.delete = ref.onDelete((change)=>{
     const data = change.data() as PaymentMethod
     if (!data.stripePayment) return
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
-    return stripe.paymentMethods.detach(data.stripePayment, {
+    return stripe.paymentMethods.detach(data.stripePayment.id, {
         idempotencyKey: `payment_detach_${change.id}`
     })
 })

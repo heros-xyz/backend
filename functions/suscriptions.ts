@@ -5,9 +5,22 @@ import {PaymentMethod} from "./paymentMethod";
 import {User} from "./auth";
 import {MembershipTier} from "./membershipTiers";
 
+
 interface SuscriptionCreateParams {
     paymentMethod: string
     membershipTier: string
+}
+
+interface SuscriptionDoc {
+    stripeSubscription: Stripe.Response<Stripe.Subscription>
+    maker: string
+    taker: string
+    takerData:{
+        avatar: string
+        name: string
+        email: string
+    }
+    createdAt: Date
 }
 
 const stripeSecret = "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw"
@@ -31,9 +44,14 @@ exports.create = functions.https.onCall(async ({paymentMethod, membershipTier}: 
     if (!membershipTierData || !membershipTierData.stripeProduct)
         throw new functions.https.HttpsError("permission-denied", "product")
 
-    const suscriptionDoc = admin.firestore().collection("subscriptions").doc()
-
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
+
+    const suscriptionDoc = await admin.firestore().collection("subscriptions").doc(`${uid}_${membershipTierData.uid}`).get()
+    const suscriptionDocData = suscriptionDoc.data() as SuscriptionDoc
+    if (suscriptionDocData && suscriptionDocData.stripeSubscription as Stripe.Response<Stripe.Subscription>) {
+        await stripe.subscriptions.del(suscriptionDocData.stripeSubscription.id)
+    }
+
     const suscription = await stripe.subscriptions.create({
         customer: userDocData.stripeCustomer,
         items: [
@@ -42,14 +60,21 @@ exports.create = functions.https.onCall(async ({paymentMethod, membershipTier}: 
                 quantity: 1,
             },
         ],
-        default_payment_method: paymentMethodDocData.stripePayment,
+        default_payment_method: paymentMethodDocData.stripePayment.id,
         metadata: {
             subscriptionId: suscriptionDoc.id,
         },
     });
-    return suscriptionDoc.set({
+    return suscriptionDoc.ref.set({
         stripeSubscription: suscription,
         maker: membershipTierData.uid,
-        taker: uid
-    })
+        taker: uid,
+        createdAt: new Date(),
+        takerData: {
+            avatar: userDocData.avatar,
+            email: userDocData.email,
+            name: userDocData.fullName
+        }
+
+    } as SuscriptionDoc,{merge: true})
 })

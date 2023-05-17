@@ -6,6 +6,8 @@ import * as speakeasy from "speakeasy";
 import * as sgMail from "@sendgrid/mail";
 
 export interface User {
+    avatar: string
+    fullName: string
     email: string
     profileType: "FAN" | "ATHLETE" | "ADMIN"
     stripeCustomer: string
