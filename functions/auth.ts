@@ -5,7 +5,16 @@ import * as functions2 from "firebase-functions/v2";
 import * as speakeasy from "speakeasy";
 import * as sgMail from "@sendgrid/mail";
 
+export interface User {
+    avatar: string
+    fullName: string
+    email: string
+    profileType: "FAN" | "ATHLETE" | "ADMIN"
+    stripeCustomer: string
+}
+
 async function sendEmail(email: string, secret: string) {
+    //TODO: Mover esto a secrets
     sgMail.setApiKey("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");
     const msg = {
         to: email,
@@ -23,7 +32,7 @@ async function sendEmail(email: string, secret: string) {
     await sgMail.send(msg);
 }
 
-exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
+exports.onUserCreate =functions.auth.user().onCreate(async (user) => {
     // Crear el documento en /user y /user/{uid}/private
     await admin.firestore().collection("user").doc(user.uid).set({
         email: user.email,
@@ -52,8 +61,11 @@ exports.signup = functions2.https.onCall(async (request: any) => {
             emailVerified: false,
             disabled: false,
         });
-    } catch (error) {
-        throw new functions.https.HttpsError("already-exists", "USER_ALREADY_REGISTERED");
+    } catch (error: any) {
+        if (error.code !== "auth/email-already-exists") {
+            throw new functions.https.HttpsError("already-exists", "USER_ALREADY_REGISTERED");
+        }
+        user = await admin.auth().getUserByEmail(email);
     }
 
     // Crear el secreto OTP
