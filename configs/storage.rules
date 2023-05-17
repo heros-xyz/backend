@@ -7,14 +7,14 @@ service firebase.storage {
       function hasRoles(roles){
         return request.auth.token.roles.hasAll(roles);
       }
-    match /users/{userId} {
-      allow read: if isAuthenticatedWithUid(userId) || hasRoles(['admin']);
-      match /tmp/{imageId} {
-        allow read,write: if isAuthenticatedWithUid(userId);
+
+      match /profile/{uid} {
+        allow read: if true;
+        allow write: if isAuthenticatedWithUid(uid)
       }
-    }
-    match /{allPaths=**} {
-      allow read, write: if false;
-    }
+
+      match /{allPaths=**} {
+        allow read, write: if true;
+      }
   }
 }
