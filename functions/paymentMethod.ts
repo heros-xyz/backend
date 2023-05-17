@@ -12,30 +12,40 @@ interface PaymentBefore {
     uid: string
 }
 interface PaymentAfter {
-    stripePayment: string
+    stripePayment?: string
+    error?: string
     uid: string
 }
 
 exports.createPaymentMethods = functions.firestore.document("paymentMethods/{docId}").onCreate(async (change) => {
-    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
     const data = change.data() as PaymentBefore
     if (!data.uid) return
     const userDoc = await admin.firestore().doc(`user/${data.uid}`).get()
     if (!userDoc || !userDoc.data()) return
     const customer = userDoc?.data()?.stripeCustomer
     if(!customer) return
-    const paymentMethod = await stripe.paymentMethods.create({
-        type: "card",
-        card: {
-            number: data.cardNumber,
-            cvc: data.cardCvc,
-            exp_month: data.cardExpMonth,
-            exp_year: data.cardExpYear
-        }
-    })
-    await stripe.paymentMethods.attach(paymentMethod.id, {
-        customer
-    })
+    let paymentMethod: Stripe.Response<Stripe.PaymentMethod>|undefined
+    try {
+        const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
+        paymentMethod = await stripe.paymentMethods.create({
+            type: "card",
+            card: {
+                number: data.cardNumber,
+                cvc: data.cardCvc,
+                exp_month: data.cardExpMonth,
+                exp_year: data.cardExpYear
+            }
+        })
+
+        await stripe.paymentMethods.attach(paymentMethod.id, {
+            customer
+        })
+
+        paymentMethod = await stripe.paymentMethods.retrieve(paymentMethod.id)
+    } catch (e) {
+        console.error("createPaymentMethods", e)
+    }
+
     return change.ref.set({
         stripePayment: paymentMethod,
         uid: data.uid,

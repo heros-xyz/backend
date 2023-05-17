@@ -19,6 +19,6 @@ export const onUserCreate = functions.auth.user().onCreate(async ({email, uid}) 
             .doc(uid)
             .update({ stripeCustomer: customer.id });
     } catch (error) {
-        console.error("Error al crear el cliente de Stripe", error);
+        console.error(`onUserCreate ${uid}`, error);
     }
 })
