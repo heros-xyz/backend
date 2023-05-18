@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
+import { User } from "./auth";
 
 export enum NotificationEventType {
   FAN_SUBSCRIBE_ATHLETE = "F_SUBSCRIBE", // A fan subscribes to an athlete's tier
@@ -9,10 +10,10 @@ export enum NotificationEventType {
   FAN_REPLY_COMMENT = "F_REPLY_COMMENT", // A fan replies to an athlete's comment
   FAN_LIKE_REPLY = "F_LIKE_REPLY", // A fan replies to an athlete's comment
 
-  ATHLETE_NEW_INTERACTION = "A_NEW_INTERACTION", // An athlete posts a new interaction
-  ATHLETE_LIKE_INTERACTION = "A_LIKE_INTERACTION", // TODO: An athlete like an interaction
-  ATHLETE_COMMENT_INTERACTION = "A_COMMENT_INTERACTION", // An athlete comments an interaction
-  ATHLETE_LIKE_COMMENT = "A_LIKE_COMMENT", // An athlete likes fan's comment
+  ATHLETE_NEW_INTERACTION = "A_NEW_INTERACTION", // An athlete posts a new interaction X
+  ATHLETE_LIKE_INTERACTION = "A_LIKE_INTERACTION", // TODO: An athlete like an interaction X
+  ATHLETE_COMMENT_INTERACTION = "A_COMMENT_INTERACTION", // An athlete comments an interaction X
+  ATHLETE_LIKE_COMMENT = "A_LIKE_COMMENT", // An athlete likes fan's comment X
   ATHLETE_REPLY_COMMENT = "A_REPLY_COMMENT", // An athlete replies to fan's comment
   ATHLETE_LIKE_REPLY = "A_LIKE_REPLY", // An athlete likes fan's comment's reply
 
@@ -27,6 +28,26 @@ export enum NotificationStatusType {
   NOT_READ = "NOT_READ",
 }
 
+export interface Post {
+  id?: string;
+  content: string;
+  publicDate: Date | string;
+  schedule?: boolean;
+  publicType: string;
+  tags: string[];
+  media: {
+    url: string;
+    type: string;
+  }[];
+  reactionCount?: number;
+  commentCount?: number;
+  totalCommentCount: number;
+  totalReactionsCount: number;
+  liked?: boolean;
+  uid?: string;
+  createdAt: Date;
+}
+
 interface Notification {
   createdAt: Date;
   deletedAt?: Date;
@@ -38,35 +59,215 @@ interface Notification {
   params?: any;
   uid?: string;
   to: string; // id to get the post comment or tier
+  targetUser: string; // query notification to user in frontend
 }
+
+const converter = {
+  toFirestore: (data: any) => data,
+  fromFirestore: (snap: admin.firestore.QueryDocumentSnapshot) => {
+    const data = snap.data();
+    data.id = snap.id;
+    return data;
+  },
+};
 
 const refPost = functions.firestore.document("post/{docId}");
 
-exports.create = refPost.onCreate(async (change) => {
+exports.onPostCreate = refPost.onCreate(async (change) => {
   const onCreateData = change.data();
   const onCreateId = change.id;
 
-  functions.logger.log("Hello from info. Here's an object:", onCreateData);
+  functions.logger.log("onPostUpdate", onCreateData);
 
-  console.log("star", { onCreateData, onCreateId });
   try {
-    // create a notification doc
     const params: Notification = {
       createdAt: new Date(),
       readAt: null,
-      type: "post",
+      type: "like",
       to: onCreateId,
       status: NotificationStatusType.NOT_READ, // TODO: check this
-      eventType: NotificationEventType.ATHLETE_NEW_INTERACTION,
+      eventType: NotificationEventType.ATHLETE_LIKE_INTERACTION,
     };
-    console.log("creando");
     await admin.firestore().collection("notification").add(params);
   } catch (error) {
-    console.log(error);
+    functions.logger.error("[ERROR] onPostUpdate", error);
   }
 });
 
-exports.update = refPost.onUpdate(async (change) => {
-  const onUpdateData = change.after.data();
-  console.log("update", onUpdateData);
+export type ReactionType = "LIKE";
+export type ToType = "POST" | "COMMENT";
+export interface Reaction {
+  id?: string;
+  type_: ReactionType;
+  toType: ToType;
+  to: string; // puede ser un post o comentario
+  uid: string; // la persona que lo origino
+}
+
+const refReactions = functions.firestore.document("reactions/{docId}");
+
+exports.onReactionCreate = refReactions.onCreate(async (change) => {
+  const onCreateData = change.data() as Reaction;
+  const onCreateId = change.id;
+
+  functions.logger.log("onReactionCreate", onCreateData);
+
+  try {
+    const userMaker = (
+      await admin.firestore().doc(`user/${onCreateData.uid}`).get()
+    ).data() as User;
+
+    let params: Notification = {};
+
+    // TODO: maybe switch statement?
+    if (onCreateData.toType === "POST") {
+      // ATHLETE_LIKE_INTERACTION = "A_LIKE_INTERACTION", // TODO: An athlete like an interaction
+      const post = (
+        await admin.firestore().doc(`post/${onCreateData.to}`).get()
+      ).data() as Post;
+
+      // the user that create the post
+      const targetUserId = (
+        await admin.firestore().doc(`user/${post.uid}`).get()
+      ).id;
+
+      if (userMaker?.profileType === "ATHLETE") {
+        params = {
+          createdAt: new Date(),
+          readAt: null,
+          type: "post",
+          to: onCreateId,
+          targetUser: targetUserId,
+          message: "notification.from-athlete.like.interaction",
+          status: NotificationStatusType.NOT_READ, // TODO: check this
+          eventType: NotificationEventType.ATHLETE_LIKE_INTERACTION,
+        };
+      }
+    }
+
+    if (onCreateData.toType === "COMMENT") {
+      //ATHLETE_LIKE_COMMENT = "A_LIKE_COMMENT", // An athlete likes fan's comment
+      const comment = (
+        await admin.firestore().doc(`comments/${onCreateData.to}`).get()
+      ).data() as Comment;
+
+      const commentMaker = (
+        await admin
+          .firestore()
+          .doc(`user/${comment.uid}`)
+          .withConverter(converter)
+          .get()
+      ).data() as User;
+
+      if (
+        userMaker.profileType === "ATHLETE" &&
+        commentMaker.profileType === "FAN"
+      ) {
+        params = {
+          createdAt: new Date(),
+          readAt: null,
+          type: "like",
+          to: comment.post, // POST
+          targetUser: commentMaker.id,
+          status: NotificationStatusType.NOT_READ, // TODO: check this
+          eventType: NotificationEventType.ATHLETE_LIKE_COMMENT,
+        };
+      }
+    }
+
+    await admin.firestore().collection("notification").add(params);
+  } catch (error) {
+    functions.logger.error("[ERROR] onReactionCreate", error);
+  }
 });
+
+export interface Comment {
+  id?: string;
+  createdAt: Date;
+  deletedAt: Date;
+  content: string;
+  post: string;
+  uid: string;
+  parent?: string;
+  //calcular
+  isLiked?: boolean;
+  likeCount?: number;
+  commentsCount?: number;
+  isAuthorComment?: boolean;
+}
+
+const refComments = functions.firestore.document("comments/{docId}");
+
+exports.onCommentCreate = refComments.onCreate(async (change) => {
+  const onCreateData = change.data() as Comment;
+  const onCreateId = change.id;
+
+  functions.logger.log("onCommentCreate", onCreateData);
+
+  try {
+    const userMaker = (
+      await admin.firestore().doc(`user/${onCreateData.uid}`).get()
+    ).data() as User;
+
+    let params: Notification = {};
+
+    // TODO: maybe switch statement?
+    if (userMaker?.profileType === "ATHLETE") {
+      const isReply = !!onCreateData.parent;
+      if (isReply) {
+        const parentComment = (
+          await admin.firestore().doc(`comments/${onCreateData.parent}`).get()
+        ).data() as Comment;
+
+        const parentCommentMaker = (
+          await admin
+            .firestore()
+            .doc(`user/${parentComment.uid}`)
+            .withConverter(converter)
+            .get()
+        ).data() as User;
+
+        if (parentCommentMaker.profileType === "FAN") {
+          // ATHLETE_REPLY_COMMENT = "A_REPLY_COMMENT", // An athlete replies to fan's comment
+          params = {
+            createdAt: new Date(),
+            readAt: null,
+            type: "comment",
+            targetUser: parentCommentMaker.id,
+            to: onCreateData.post, // this should be the post
+            status: NotificationStatusType.NOT_READ, // TODO: check this
+            eventType: NotificationEventType.ATHLETE_REPLY_COMMENT,
+          };
+        }
+      }
+
+      const post = (
+        await admin.firestore().doc(`post/${onCreateData.post}`).get()
+      ).data() as Post;
+
+      const postMaker = (
+        await admin
+          .firestore()
+          .doc(`user/${post.uid}`)
+          .withConverter(converter)
+          .get()
+      ).data() as User;
+
+      // ATHLETE_COMMENT_INTERACTION = "A_COMMENT_INTERACTION", // An athlete comments an interaction
+      params = {
+        createdAt: new Date(),
+        readAt: null,
+        type: "comment",
+        targetUser: postMaker.id,
+        to: onCreateData.post, // this should be the post
+        status: NotificationStatusType.NOT_READ, // TODO: check this
+        eventType: NotificationEventType.ATHLETE_COMMENT_INTERACTION,
+      };
+
+      await admin.firestore().collection("notification").add(params);
+    }
+  } catch (error) {
+    functions.logger.error("[ERROR] onCommentCreate", error);
+  }
+});
+
