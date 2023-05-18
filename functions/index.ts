@@ -8,3 +8,4 @@ exports.membershipTiers = require("./membershipTiers");
 exports.paymentMethod = require("./paymentMethod");
 exports.subscriptions = require("./subscriptions");
 exports.notifications = require("./notifications");
+exports.stripe = require("./stripe");
