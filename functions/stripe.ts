@@ -101,7 +101,7 @@ const events = {
 const stripeSecret = "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw"
 // whsec_9b879f3bf39c19e7f9cdf733cb84ae7364d3687c3d2b781694d9b32b82b8b475
 const stripeEndpointSecret = "whsec_9b879f3bf39c19e7f9cdf733cb84ae7364d3687c3d2b781694d9b32b82b8b475"
-export const hook = functions.https.onRequest((req, res) => {
+export const webhook = functions.https.onRequest((req, res) => {
     const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
     const sig = req.headers["stripe-signature"];
     if (!sig) {

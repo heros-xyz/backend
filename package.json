@@ -17,7 +17,7 @@
     "emulators": "firebase emulators:start --only auth,firestore,functions,hosting,pubsub,storage  --import=./data-path/firestore --export-on-exit --project heros-dev-386505"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "main": "dist/index.js",
   "dependencies": {
