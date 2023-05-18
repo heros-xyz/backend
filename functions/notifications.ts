@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { User } from "./auth";
+import { SubscriptionStatus, SuscriptionDoc } from "./subscriptions";
 
 export enum NotificationEventType {
   FAN_SUBSCRIBE_ATHLETE = "F_SUBSCRIBE", // A fan subscribes to an athlete's tier
@@ -271,3 +272,23 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
   }
 });
 
+const refSubscriptions = functions.firestore.document("subscriptions/{docId}");
+
+exports.onSubscriptionUpdate = refSubscriptions.onUpdate(async (change) => {
+  const afterData = change.after.data() as SuscriptionDoc;
+  const afterDataId = change.after.id;
+
+  if (afterData.status === SubscriptionStatus?.ACTIVE) {
+    const params = {
+      createdAt: new Date(),
+      readAt: null,
+      type: "subscription",
+      targetUser: afterData?.maker,
+      to: afterDataId,
+      status: NotificationStatusType.NOT_READ,
+      eventType: NotificationEventType.FAN_SUBSCRIBE_ATHLETE,
+    };
+
+    await admin.firestore().collection("notification").add(params);
+  }
+});
