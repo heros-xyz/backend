@@ -109,7 +109,6 @@ exports.signin = functions2.https.onCall(async (request: any) => {
 
 exports.verify = functions2.https.onCall(async (req: any) => {
     const { email, otp } = req.data;
-    console.log("verificando");
     let userRecord: admin.auth.UserRecord;
     try {
         userRecord = await admin.auth().getUserByEmail(email);
