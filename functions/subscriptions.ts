@@ -98,22 +98,37 @@ exports.create = functions.https.onCall(
       },
     });
 
-    return suscriptionDoc.ref.set(
-      {
-        stripeSubscription: suscription,
-        maker: membershipTierData.uid,
-        taker: uid,
-        createdAt: new Date(),
-        takerData: {
-          avatar: userDocData?.avatar,
-          email: userDocData?.email,
-          name:
-            userDocData?.fullName ??
-            `${userDocData?.firstName} ${userDocData?.lastName}`,
-        },
-        status: SubscriptionStatus.DRAFT,
-      } as SuscriptionDoc,
-      { merge: true }
-    );
+ const makerDoc = await admin
+   .firestore()
+   .doc(`athleteProfile/${membershipTierData.uid}`)
+   .get();
+ const makerDocData = makerDoc.data();
+
+ return suscriptionDoc.ref.set(
+   {
+     stripeSubscription: suscription,
+     maker: membershipTierData.uid,
+     taker: uid,
+     createdAt: new Date(),
+     expiredDate: suscription.current_period_end,
+     makerData: {
+       avatar: makerDocData?.avatar,
+       nickName: makerDocData?.nickName,
+       fullName:
+         makerDocData?.fullName ??
+         `${makerDocData?.firstName} ${makerDocData?.lastName ?? ""}`,
+     },
+     monthlyPrice: membershipTierData.monthlyPrice,
+     takerData: {
+       avatar: userDocData?.avatar,
+       email: userDocData?.email,
+       name:
+         userDocData?.fullName ??
+         `${userDocData?.firstName} ${userDocData?.lastName}`,
+     },
+     status: SubscriptionStatus.DRAFT,
+   } as SuscriptionDoc,
+   { merge: true }
+ );
   }
 );
