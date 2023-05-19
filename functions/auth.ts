@@ -6,12 +6,14 @@ import * as speakeasy from "speakeasy";
 import sgMail from "@sendgrid/mail";
 
 export interface User {
-    uid: string
-    avatar: string
-    fullName: string
-    email: string
-    profileType: "FAN" | "ATHLETE" | "ADMIN"
-    stripeCustomer: string
+  uid: string;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  profileType: "FAN" | "ATHLETE" | "ADMIN";
+  stripeCustomer: string;
 }
 
 async function sendEmail(email: string, secret: string) {
