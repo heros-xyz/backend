@@ -6,6 +6,6 @@ exports.auth = require("./auth");
 exports.stripeCustomers = require("./stripeCustomers");
 exports.membershipTiers = require("./membershipTiers");
 exports.paymentMethod = require("./paymentMethod");
-exports.suscriptions = require("./suscriptions");
+exports.subscriptions = require("./subscriptions");
 exports.notifications = require("./notifications");
 exports.stripe = require("./stripe");
