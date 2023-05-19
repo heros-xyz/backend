@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { User } from "./auth";
-import { SubscriptionStatus, SuscriptionDoc } from "./subscriptions";
+import { SubscriptionStatus, SubscriptionDoc } from "./subscriptions";
 
 export enum NotificationEventType {
   FAN_SUBSCRIBE_ATHLETE = "F_SUBSCRIBE", // A fan subscribes to an athlete's tier
@@ -275,7 +275,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
 const refSubscriptions = functions.firestore.document("subscriptions/{docId}");
 
 exports.onSubscriptionUpdate = refSubscriptions.onUpdate(async (change) => {
-  const afterData = change.after.data() as SuscriptionDoc;
+  const afterData = change.after.data() as SubscriptionDoc;
   const afterDataId = change.after.id;
 
   if (afterData.status === SubscriptionStatus?.ACTIVE) {

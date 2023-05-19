@@ -12,12 +12,12 @@ export enum SubscriptionStatus {
   CANCEL = 3,
 }
 
-interface SuscriptionCreateParams {
+interface SubscriptionCreateParams {
   paymentMethod: string;
   membershipTier: string;
 }
 
-export interface SuscriptionDoc {
+export interface SubscriptionDoc {
   stripeSubscription: Stripe.Response<Stripe.Subscription>;
   maker: string;
   taker: string;
@@ -34,7 +34,7 @@ const stripeSecret =
   "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw";
 exports.create = functions.https.onCall(
   async (
-    { paymentMethod, membershipTier }: SuscriptionCreateParams,
+    { paymentMethod, membershipTier }: SubscriptionCreateParams,
     context
   ) => {
     functions.logger.log("START create subscription", {
@@ -71,20 +71,17 @@ exports.create = functions.https.onCall(
 
     const stripe = new Stripe(stripeSecret, { apiVersion: "2022-11-15" });
 
-    const suscriptionDoc = await admin
+    const subscriptionDoc = await admin
       .firestore()
       .collection("subscriptions")
       .doc(`${uid}_${membershipTierData.uid}`)
       .get();
-    const suscriptionDocData = suscriptionDoc.data() as SuscriptionDoc;
-    if (
-      suscriptionDocData &&
-      (suscriptionDocData.stripeSubscription as Stripe.Response<Stripe.Subscription>)
-    ) {
-      await stripe.subscriptions.del(suscriptionDocData.stripeSubscription.id);
+    const subscriptionDocData = subscriptionDoc.data() as SubscriptionDoc;
+    if (subscriptionDocData && subscriptionDocData.stripeSubscription) {
+      await stripe.subscriptions.del(subscriptionDocData.stripeSubscription.id);
     }
 
-    const suscription = await stripe.subscriptions.create({
+    const subscription = await stripe.subscriptions.create({
       customer: userDocData.stripeCustomer,
       items: [
         {
@@ -94,41 +91,43 @@ exports.create = functions.https.onCall(
       ],
       default_payment_method: paymentMethodDocData.stripePayment.id,
       metadata: {
-        subscriptionId: suscriptionDoc.id,
+        subscriptionId: subscriptionDoc.id,
       },
     });
 
- const makerDoc = await admin
-   .firestore()
-   .doc(`athleteProfile/${membershipTierData.uid}`)
-   .get();
- const makerDocData = makerDoc.data();
+    const makerDoc = await admin
+      .firestore()
+      .doc(`athleteProfile/${membershipTierData.uid}`)
+      .get();
+    const makerDocData = makerDoc.data();
 
- return suscriptionDoc.ref.set(
-   {
-     stripeSubscription: suscription,
-     maker: membershipTierData.uid,
-     taker: uid,
-     createdAt: new Date(),
-     expiredDate: suscription.current_period_end,
-     makerData: {
-       avatar: makerDocData?.avatar,
-       nickName: makerDocData?.nickName,
-       fullName:
-         makerDocData?.fullName ??
-         `${makerDocData?.firstName} ${makerDocData?.lastName ?? ""}`,
-     },
-     monthlyPrice: membershipTierData.monthlyPrice,
-     takerData: {
-       avatar: userDocData?.avatar,
-       email: userDocData?.email,
-       name:
-         userDocData?.fullName ??
-         `${userDocData?.firstName} ${userDocData?.lastName}`,
-     },
-     status: SubscriptionStatus.DRAFT,
-   } as SuscriptionDoc,
-   { merge: true }
- );
+    return subscriptionDoc.ref.set(
+      {
+        stripeSubscription: subscription,
+        maker: membershipTierData.uid,
+        taker: uid,
+        createdAt: new Date(),
+        expiredDate: subscription.current_period_end,
+        makerData: {
+          // ATHLETE
+          avatar: makerDocData?.avatar,
+          nickName: makerDocData?.nickName,
+          fullName:
+            makerDocData?.fullName ??
+            `${makerDocData?.firstName} ${makerDocData?.lastName ?? ""}`,
+        },
+        monthlyPrice: membershipTierData.monthlyPrice,
+        takerData: {
+          // FAN
+          avatar: userDocData?.avatar,
+          email: userDocData?.email,
+          name:
+            userDocData?.fullName ??
+            `${userDocData?.firstName} ${userDocData?.lastName}`,
+        },
+        status: SubscriptionStatus.DRAFT,
+      } as SubscriptionDoc,
+      { merge: true }
+    );
   }
 );
