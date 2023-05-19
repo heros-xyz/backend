@@ -78,3 +78,21 @@ exports.create = functions.https.onCall(async ({paymentMethod, membershipTier}: 
 
     } as SuscriptionDoc,{merge: true})
 })
+
+exports.delete = functions.https.onCall(async (subscriptionId: string, context) => {
+    const uid = context.auth?.uid
+    if (!uid)
+        throw new functions.https.HttpsError("permission-denied", "uid")
+
+    const suscriptionDoc = await admin.firestore().collection("subscriptions").doc(`${uid}_${membershipTierData.uid}`).get()
+    const suscriptionDocData = suscriptionDoc.data() as SuscriptionDoc
+    if (!suscriptionDocData || suscriptionDocData.taker !== uid)
+        throw new functions.https.HttpsError("permission-denied", "subscription")
+
+    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
+    await stripe.subscriptions.del(suscriptionDocData.stripeSubscription.id)
+    return suscriptionDoc.ref.set({
+        status: "cancel",
+        autorenew: false
+    },{merge: true})
+})
