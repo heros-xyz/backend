@@ -4,3 +4,5 @@ data-path/
 .vscode/
 dist/
 .idea
+/*.log
+./emulators_base_data

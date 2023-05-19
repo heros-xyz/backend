@@ -37,10 +37,6 @@ exports.create = functions.https.onCall(
     { paymentMethod, membershipTier }: SubscriptionCreateParams,
     context
   ) => {
-    functions.logger.log("START create subscription", {
-      paymentMethod,
-      membershipTier,
-    });
     const uid = context.auth?.uid;
     if (!uid) throw new functions.https.HttpsError("permission-denied", "uid");
 
@@ -57,7 +53,6 @@ exports.create = functions.https.onCall(
 
     const userDoc = await admin.firestore().doc(`user/${uid}`).get();
     const userDocData = userDoc.data() as User;
-    functions.logger.info("userDocData", userDocData);
     if (!userDocData || !userDocData.stripeCustomer)
       throw new functions.https.HttpsError("permission-denied", "customer");
 
@@ -132,3 +127,31 @@ exports.create = functions.https.onCall(
     );
   }
 );
+
+exports.delete = functions.https.onCall(
+  async (subscriptionId: string, context) => {
+    const uid = context.auth?.uid;
+    if (!uid) throw new functions.https.HttpsError("permission-denied", "uid");
+
+    const subscriptionDoc = await admin
+      .firestore()
+      .collection("subscriptions")
+      .doc(subscriptionId)
+      .get();
+    const subscriptionDocData = subscriptionDoc.data() as SubscriptionDoc;
+    if (!subscriptionDocData || subscriptionDocData.taker !== uid)
+      throw new functions.https.HttpsError("permission-denied", "subscription");
+
+    const stripe = new Stripe(stripeSecret, { apiVersion: "2022-11-15" });
+    await stripe.subscriptions.del(subscriptionDocData.stripeSubscription.id);
+    return subscriptionDoc.ref.set(
+      {
+        status: "cancel",
+        autoRenew: false,
+      },
+      { merge: true }
+    );
+  }
+);
+
+
