@@ -1,6 +1,6 @@
 import * as fft from "firebase-functions-test"
 
-export const test = fft();
+export const test = fft.default();
 
 test.mockConfig({
     stripe: {

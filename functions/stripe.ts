@@ -22,6 +22,18 @@ function getSubscriptionId(data: Stripe.Invoice) {
     return subscriptionId;
 }
 
+async function updateFans(atlheteId: string){
+    const fansCount = await admin.firestore().collection("subscriptions")
+        .where("maker", "==", atlheteId)
+        .where("status", "==", SubscriptionStatus.ACTIVE)
+        .get()
+    //update Athlet
+    await admin.firestore().collection("athleteProfile").doc(atlheteId).update({
+        totalSubCount: fansCount.docs.length
+    })
+    //totalSubCount
+}
+
 const events = {
     "invoice.created": async (event: Stripe.Event)=>{
         const data = event.data.object as Stripe.Invoice
@@ -40,6 +52,7 @@ const events = {
             await admin.firestore().collection("subscriptions").doc(subscriptionId).update({
                 status: SubscriptionStatus.ACTIVE
             })
+            await updateFans(subscriptionId.split("_")[1])
         }
         return admin.firestore().collection("invoices").doc(data.id).set({
             ...data,
@@ -70,6 +83,7 @@ const events = {
         await admin.firestore().collection("subscriptions").doc(subscriptionId).update({
             status: SubscriptionStatus.CANCEL
         })
+        await updateFans(subscriptionId.split("_")[1])
     },
     "customer.subscription.updated": async (event: Stripe.Event.Data)=>{
         const data = event.object as Stripe.Subscription
@@ -92,6 +106,7 @@ const events = {
         await admin.firestore().collection("subscriptions").doc(subscriptionId).update({
             status: SubscriptionStatus.CANCEL
         })
+        await updateFans(subscriptionId.split("_")[1])
     },
     /*"invoice.finalized",
     "invoice.finalization_failed",

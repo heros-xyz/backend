@@ -3,9 +3,10 @@ import * as functions from "firebase-functions";
 // eslint-disable-next-line import/no-unresolved
 import * as functions2 from "firebase-functions/v2";
 import * as speakeasy from "speakeasy";
-import * as sgMail from "@sendgrid/mail";
+import sgMail from "@sendgrid/mail";
 
 export interface User {
+    uid: string
     avatar: string
     fullName: string
     email: string

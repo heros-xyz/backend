@@ -1,0 +1,1535 @@
+[
+  {
+    "code": "4",
+    "name": "Afghan",
+    "phoneCode": "93",
+    "twoLetterCode": "AF",
+    "threeLetterCode": "AFG"
+  },
+  {
+    "code": "8",
+    "name": "Albanian",
+    "phoneCode": "355",
+    "twoLetterCode": "AL",
+    "threeLetterCode": "ALB"
+  },
+  {
+    "code": "12",
+    "name": "Algerian",
+    "phoneCode": "213",
+    "twoLetterCode": "DZ",
+    "threeLetterCode": "DZA"
+  },
+  {
+    "code": "20",
+    "name": "Andorran",
+    "phoneCode": "376",
+    "twoLetterCode": "AD",
+    "threeLetterCode": "AND"
+  },
+  {
+    "code": "24",
+    "name": "Angolan",
+    "phoneCode": "244",
+    "twoLetterCode": "AO",
+    "threeLetterCode": "AGO"
+  },
+  {
+    "code": "660",
+    "name": "Anguillan",
+    "phoneCode": "1264",
+    "twoLetterCode": "AI",
+    "threeLetterCode": "AIA"
+  },
+  {
+    "code": "28",
+    "name": "Citizen of Antigua and Barbuda",
+    "phoneCode": "1268",
+    "twoLetterCode": "AG",
+    "threeLetterCode": "ATG"
+  },
+  {
+    "code": "32",
+    "name": "Argentine",
+    "phoneCode": "54",
+    "twoLetterCode": "AR",
+    "threeLetterCode": "ARG"
+  },
+  {
+    "code": "51",
+    "name": "Armenian",
+    "phoneCode": "374",
+    "twoLetterCode": "AM",
+    "threeLetterCode": "ARM"
+  },
+  {
+    "code": "36",
+    "name": "Australian",
+    "phoneCode": "61",
+    "twoLetterCode": "AU",
+    "threeLetterCode": "AUS"
+  },
+  {
+    "code": "40",
+    "name": "Austrian",
+    "phoneCode": "43",
+    "twoLetterCode": "AT",
+    "threeLetterCode": "AUT"
+  },
+  {
+    "code": "31",
+    "name": "Azerbaijani",
+    "phoneCode": "994",
+    "twoLetterCode": "AZ",
+    "threeLetterCode": "AZE"
+  },
+  {
+    "code": "44",
+    "name": "Bahamian",
+    "phoneCode": "1242",
+    "twoLetterCode": "BS",
+    "threeLetterCode": "BHS"
+  },
+  {
+    "code": "48",
+    "name": "Bahraini",
+    "phoneCode": "973",
+    "twoLetterCode": "BH",
+    "threeLetterCode": "BHR"
+  },
+  {
+    "code": "50",
+    "name": "Bangladeshi",
+    "phoneCode": "880",
+    "twoLetterCode": "BD",
+    "threeLetterCode": "BGD"
+  },
+  {
+    "code": "52",
+    "name": "Barbadian",
+    "phoneCode": "1246",
+    "twoLetterCode": "BB",
+    "threeLetterCode": "BRB"
+  },
+  {
+    "code": "112",
+    "name": "Belarusian",
+    "phoneCode": "375",
+    "twoLetterCode": "BY",
+    "threeLetterCode": "BLR"
+  },
+  {
+    "code": "56",
+    "name": "Belgian",
+    "phoneCode": "32",
+    "twoLetterCode": "BE",
+    "threeLetterCode": "BEL"
+  },
+  {
+    "code": "84",
+    "name": "Belizean",
+    "phoneCode": "501",
+    "twoLetterCode": "BZ",
+    "threeLetterCode": "BLZ"
+  },
+  {
+    "code": "204",
+    "name": "Beninese",
+    "phoneCode": "229",
+    "twoLetterCode": "BJ",
+    "threeLetterCode": "BEN"
+  },
+  {
+    "code": "60",
+    "name": "Bermudian",
+    "phoneCode": "1441",
+    "twoLetterCode": "BM",
+    "threeLetterCode": "BMU"
+  },
+  {
+    "code": "64",
+    "name": "Bhutanese",
+    "phoneCode": "975",
+    "twoLetterCode": "BT",
+    "threeLetterCode": "BTN"
+  },
+  {
+    "code": "68",
+    "name": "Bolivian",
+    "phoneCode": "591",
+    "twoLetterCode": "BO",
+    "threeLetterCode": "BOL"
+  },
+  {
+    "code": "70",
+    "name": "Citizen of Bosnia and Herzegovina",
+    "phoneCode": "387",
+    "twoLetterCode": "BA",
+    "threeLetterCode": "BIH"
+  },
+  {
+    "code": "72",
+    "name": "Botswanan",
+    "phoneCode": "267",
+    "twoLetterCode": "BW",
+    "threeLetterCode": "BWA"
+  },
+  {
+    "code": "76",
+    "name": "Brazilian",
+    "phoneCode": "55",
+    "twoLetterCode": "BR",
+    "threeLetterCode": "BRA"
+  },
+  {
+    "code": "96",
+    "name": "Bruneian",
+    "phoneCode": "673",
+    "twoLetterCode": "BN",
+    "threeLetterCode": "BRN"
+  },
+  {
+    "code": "100",
+    "name": "Bulgarian",
+    "phoneCode": "359",
+    "twoLetterCode": "BG",
+    "threeLetterCode": "BGR"
+  },
+  {
+    "code": "854",
+    "name": "Burkinabé",
+    "phoneCode": "226",
+    "twoLetterCode": "BF",
+    "threeLetterCode": "BFA"
+  },
+  {
+    "code": "108",
+    "name": "Burundian",
+    "phoneCode": "257",
+    "twoLetterCode": "BI",
+    "threeLetterCode": "BDI"
+  },
+  {
+    "code": "132",
+    "name": "Cape Verdean",
+    "phoneCode": "238",
+    "twoLetterCode": "CV",
+    "threeLetterCode": "CPV"
+  },
+  {
+    "code": "116",
+    "name": "Cambodian",
+    "phoneCode": "855",
+    "twoLetterCode": "KH",
+    "threeLetterCode": "KHM"
+  },
+  {
+    "code": "120",
+    "name": "Cameroonian",
+    "phoneCode": "237",
+    "twoLetterCode": "CM",
+    "threeLetterCode": "CMR"
+  },
+  {
+    "code": "124",
+    "name": "Canadian",
+    "phoneCode": "1",
+    "twoLetterCode": "CA",
+    "threeLetterCode": "CAN"
+  },
+  {
+    "code": "136",
+    "name": "Cayman Islander",
+    "phoneCode": "1345",
+    "twoLetterCode": "KY",
+    "threeLetterCode": "CYM"
+  },
+  {
+    "code": "140",
+    "name": "Central African",
+    "phoneCode": "236",
+    "twoLetterCode": "CF",
+    "threeLetterCode": "CAF"
+  },
+  {
+    "code": "148",
+    "name": "Chadian",
+    "phoneCode": "235",
+    "twoLetterCode": "TD",
+    "threeLetterCode": "TCD"
+  },
+  {
+    "code": "152",
+    "name": "Chilean",
+    "phoneCode": "56",
+    "twoLetterCode": "CL",
+    "threeLetterCode": "CHL"
+  },
+  {
+    "code": "156",
+    "name": "Chinese",
+    "phoneCode": "86",
+    "twoLetterCode": "CN",
+    "threeLetterCode": "CHN"
+  },
+  {
+    "code": "170",
+    "name": "Colombian",
+    "phoneCode": "57",
+    "twoLetterCode": "CO",
+    "threeLetterCode": "COL"
+  },
+  {
+    "code": "174",
+    "name": "Comoran",
+    "phoneCode": "269",
+    "twoLetterCode": "KM",
+    "threeLetterCode": "COM"
+  },
+  {
+    "code": "178",
+    "name": "Congolese(Congo)",
+    "phoneCode": "242",
+    "twoLetterCode": "CG",
+    "threeLetterCode": "COG"
+  },
+  {
+    "code": "180",
+    "name": "Congolese(DRC)",
+    "phoneCode": "242",
+    "twoLetterCode": "CD",
+    "threeLetterCode": "COD"
+  },
+  {
+    "code": "184",
+    "name": "Cook Islander",
+    "phoneCode": "682",
+    "twoLetterCode": "CK",
+    "threeLetterCode": "COK"
+  },
+  {
+    "code": "188",
+    "name": "Costa Rican",
+    "phoneCode": "506",
+    "twoLetterCode": "CR",
+    "threeLetterCode": "CRI"
+  },
+  {
+    "code": "384",
+    "name": "Ivorian",
+    "phoneCode": "225",
+    "twoLetterCode": "CI",
+    "threeLetterCode": "CIV"
+  },
+  {
+    "code": "191",
+    "name": "Croatian",
+    "phoneCode": "385",
+    "twoLetterCode": "HR",
+    "threeLetterCode": "HRV"
+  },
+  {
+    "code": "192",
+    "name": "Cuban",
+    "phoneCode": "53",
+    "twoLetterCode": "CU",
+    "threeLetterCode": "CUB"
+  },
+  {
+    "code": "196",
+    "name": "Cypriot",
+    "phoneCode": "357",
+    "twoLetterCode": "CY",
+    "threeLetterCode": "CYP"
+  },
+  {
+    "code": "203",
+    "name": "Czech",
+    "phoneCode": "420",
+    "twoLetterCode": "CZ",
+    "threeLetterCode": "CZE"
+  },
+  {
+    "code": "208",
+    "name": "Danish",
+    "phoneCode": "45",
+    "twoLetterCode": "DK",
+    "threeLetterCode": "DNK"
+  },
+  {
+    "code": "262",
+    "name": "Djiboutian",
+    "phoneCode": "253",
+    "twoLetterCode": "DJ",
+    "threeLetterCode": "DJI"
+  },
+  {
+    "code": "212",
+    "name": "Dominican",
+    "phoneCode": "1767",
+    "twoLetterCode": "DM",
+    "threeLetterCode": "DMA"
+  },
+  {
+    "code": "214",
+    "name": "Citizen of the Dominican Republic",
+    "phoneCode": "1",
+    "twoLetterCode": "DO",
+    "threeLetterCode": "DOM"
+  },
+  {
+    "code": "218",
+    "name": "Ecuadorean",
+    "phoneCode": "593",
+    "twoLetterCode": "EC",
+    "threeLetterCode": "ECU"
+  },
+  {
+    "code": "818",
+    "name": "Egyptian",
+    "phoneCode": "20",
+    "twoLetterCode": "EG",
+    "threeLetterCode": "EGY"
+  },
+  {
+    "code": "222",
+    "name": "Salvadorean",
+    "phoneCode": "503",
+    "twoLetterCode": "SV",
+    "threeLetterCode": "SLV"
+  },
+  {
+    "code": "226",
+    "name": "Equatorial Guinean",
+    "phoneCode": "240",
+    "twoLetterCode": "GQ",
+    "threeLetterCode": "GNQ"
+  },
+  {
+    "code": "232",
+    "name": "Eritrean",
+    "phoneCode": "291",
+    "twoLetterCode": "ER",
+    "threeLetterCode": "ERI"
+  },
+  {
+    "code": "233",
+    "name": "Estonian",
+    "phoneCode": "372",
+    "twoLetterCode": "EE",
+    "threeLetterCode": "EST"
+  },
+  {
+    "code": "231",
+    "name": "Ethiopian",
+    "phoneCode": "251",
+    "twoLetterCode": "ET",
+    "threeLetterCode": "ETH"
+  },
+  {
+    "code": "238",
+    "name": "Falkland Island",
+    "phoneCode": "500",
+    "twoLetterCode": "FK",
+    "threeLetterCode": "FLK"
+  },
+  {
+    "code": "234",
+    "name": "Faroese",
+    "phoneCode": "298",
+    "twoLetterCode": "FO",
+    "threeLetterCode": "FRO"
+  },
+  {
+    "code": "242",
+    "name": "Fijian",
+    "phoneCode": "679",
+    "twoLetterCode": "FJ",
+    "threeLetterCode": "FJI"
+  },
+  {
+    "code": "246",
+    "name": "Finnish",
+    "phoneCode": "358",
+    "twoLetterCode": "FI",
+    "threeLetterCode": "FIN"
+  },
+  {
+    "code": "250",
+    "name": "French",
+    "phoneCode": "33",
+    "twoLetterCode": "FR",
+    "threeLetterCode": "FRA"
+  },
+  {
+    "code": "266",
+    "name": "Gabonese",
+    "phoneCode": "241",
+    "twoLetterCode": "GA",
+    "threeLetterCode": "GAB"
+  },
+  {
+    "code": "270",
+    "name": "Gambian",
+    "phoneCode": "220",
+    "twoLetterCode": "GM",
+    "threeLetterCode": "GMB"
+  },
+  {
+    "code": "268",
+    "name": "Georgian",
+    "phoneCode": "995",
+    "twoLetterCode": "GE",
+    "threeLetterCode": "GEO"
+  },
+  {
+    "code": "276",
+    "name": "German",
+    "phoneCode": "49",
+    "twoLetterCode": "DE",
+    "threeLetterCode": "DEU"
+  },
+  {
+    "code": "288",
+    "name": "Ghanaian",
+    "phoneCode": "233",
+    "twoLetterCode": "GH",
+    "threeLetterCode": "GHA"
+  },
+  {
+    "code": "292",
+    "name": "Gibraltarian",
+    "phoneCode": "350",
+    "twoLetterCode": "GI",
+    "threeLetterCode": "GIB"
+  },
+  {
+    "code": "300",
+    "name": "Greek",
+    "phoneCode": "30",
+    "twoLetterCode": "GR",
+    "threeLetterCode": "GRC"
+  },
+  {
+    "code": "304",
+    "name": "Greenlandic",
+    "phoneCode": "299",
+    "twoLetterCode": "GL",
+    "threeLetterCode": "GRL"
+  },
+  {
+    "code": "308",
+    "name": "Grenadian",
+    "phoneCode": "1473",
+    "twoLetterCode": "GD",
+    "threeLetterCode": "GRD"
+  },
+  {
+    "code": "316",
+    "name": "Guamanian",
+    "phoneCode": "1671",
+    "twoLetterCode": "GU",
+    "threeLetterCode": "GUM"
+  },
+  {
+    "code": "320",
+    "name": "Guatemalan",
+    "phoneCode": "502",
+    "twoLetterCode": "GT",
+    "threeLetterCode": "GTM"
+  },
+  {
+    "code": "324",
+    "name": "Guinean",
+    "phoneCode": "224",
+    "twoLetterCode": "GN",
+    "threeLetterCode": "GIN"
+  },
+  {
+    "code": "624",
+    "name": "Citizen of Guinea-Bissau",
+    "phoneCode": "245",
+    "twoLetterCode": "GW",
+    "threeLetterCode": "GNB"
+  },
+  {
+    "code": "328",
+    "name": "Guyanese",
+    "phoneCode": "592",
+    "twoLetterCode": "GY",
+    "threeLetterCode": "GUY"
+  },
+  {
+    "code": "332",
+    "name": "Haitian",
+    "phoneCode": "509",
+    "twoLetterCode": "HT",
+    "threeLetterCode": "HTI"
+  },
+  {
+    "code": "336",
+    "name": "Vatican citizen",
+    "phoneCode": "39",
+    "twoLetterCode": "VA",
+    "threeLetterCode": "VAT"
+  },
+  {
+    "code": "340",
+    "name": "Honduran",
+    "phoneCode": "504",
+    "twoLetterCode": "HN",
+    "threeLetterCode": "HND"
+  },
+  {
+    "code": "344",
+    "name": "Hong Konger",
+    "phoneCode": "852",
+    "twoLetterCode": "HK",
+    "threeLetterCode": "HKG"
+  },
+  {
+    "code": "348",
+    "name": "Hungarian",
+    "phoneCode": "36",
+    "twoLetterCode": "HU",
+    "threeLetterCode": "HUN"
+  },
+  {
+    "code": "352",
+    "name": "Icelandic",
+    "phoneCode": "354",
+    "twoLetterCode": "IS",
+    "threeLetterCode": "ISL"
+  },
+  {
+    "code": "356",
+    "name": "Indian",
+    "phoneCode": "91",
+    "twoLetterCode": "IN",
+    "threeLetterCode": "IND"
+  },
+  {
+    "code": "360",
+    "name": "Indonesian",
+    "phoneCode": "62",
+    "twoLetterCode": "ID",
+    "threeLetterCode": "IDN"
+  },
+  {
+    "code": "364",
+    "name": "Iranian",
+    "phoneCode": "98",
+    "twoLetterCode": "IR",
+    "threeLetterCode": "IRN"
+  },
+  {
+    "code": "368",
+    "name": "Iraqi",
+    "phoneCode": "964",
+    "twoLetterCode": "IQ",
+    "threeLetterCode": "IRQ"
+  },
+  {
+    "code": "372",
+    "name": "Irish",
+    "phoneCode": "353",
+    "twoLetterCode": "IE",
+    "threeLetterCode": "IRL"
+  },
+  {
+    "code": "376",
+    "name": "Israeli",
+    "phoneCode": "972",
+    "twoLetterCode": "IL",
+    "threeLetterCode": "ISR"
+  },
+  {
+    "code": "380",
+    "name": "Italian",
+    "phoneCode": "39",
+    "twoLetterCode": "IT",
+    "threeLetterCode": "ITA"
+  },
+  {
+    "code": "388",
+    "name": "Jamaican",
+    "phoneCode": "1876",
+    "twoLetterCode": "JM",
+    "threeLetterCode": "JAM"
+  },
+  {
+    "code": "392",
+    "name": "Japanese",
+    "phoneCode": "81",
+    "twoLetterCode": "JP",
+    "threeLetterCode": "JPN"
+  },
+  {
+    "code": "400",
+    "name": "Jordanian",
+    "phoneCode": "962",
+    "twoLetterCode": "JO",
+    "threeLetterCode": "JOR"
+  },
+  {
+    "code": "398",
+    "name": "Kazakh",
+    "phoneCode": "7",
+    "twoLetterCode": "KZ",
+    "threeLetterCode": "KAZ"
+  },
+  {
+    "code": "404",
+    "name": "Kenyan",
+    "phoneCode": "254",
+    "twoLetterCode": "KE",
+    "threeLetterCode": "KEN"
+  },
+  {
+    "code": "296",
+    "name": "Citizen of Kiribati",
+    "phoneCode": "686",
+    "twoLetterCode": "KI",
+    "threeLetterCode": "KIR"
+  },
+  {
+    "code": "408",
+    "name": "North Korean",
+    "phoneCode": "850",
+    "twoLetterCode": "KP",
+    "threeLetterCode": "PRK"
+  },
+  {
+    "code": "410",
+    "name": "South Korean",
+    "phoneCode": "82",
+    "twoLetterCode": "KR",
+    "threeLetterCode": "KOR"
+  },
+  {
+    "code": "414",
+    "name": "Kuwaiti",
+    "phoneCode": "965",
+    "twoLetterCode": "KW",
+    "threeLetterCode": "KWT"
+  },
+  {
+    "code": "417",
+    "name": "Kyrgyz",
+    "phoneCode": "996",
+    "twoLetterCode": "KG",
+    "threeLetterCode": "KGZ"
+  },
+  {
+    "code": "418",
+    "name": "Lao",
+    "phoneCode": "856",
+    "twoLetterCode": "LA",
+    "threeLetterCode": "LAO"
+  },
+  {
+    "code": "428",
+    "name": "Latvian",
+    "phoneCode": "371",
+    "twoLetterCode": "LV",
+    "threeLetterCode": "LVA"
+  },
+  {
+    "code": "422",
+    "name": "Lebanese",
+    "phoneCode": "961",
+    "twoLetterCode": "LB",
+    "threeLetterCode": "LBN"
+  },
+  {
+    "code": "430",
+    "name": "Liberian",
+    "phoneCode": "231",
+    "twoLetterCode": "LR",
+    "threeLetterCode": "LBR"
+  },
+  {
+    "code": "434",
+    "name": "Libyan",
+    "phoneCode": "218",
+    "twoLetterCode": "LY",
+    "threeLetterCode": "LBY"
+  },
+  {
+    "code": "438",
+    "name": "Liechtenstein citizen",
+    "phoneCode": "423",
+    "twoLetterCode": "LI",
+    "threeLetterCode": "LIE"
+  },
+  {
+    "code": "440",
+    "name": "Lithuanian",
+    "phoneCode": "370",
+    "twoLetterCode": "LT",
+    "threeLetterCode": "LTU"
+  },
+  {
+    "code": "442",
+    "name": "Luxembourger",
+    "phoneCode": "352",
+    "twoLetterCode": "LU",
+    "threeLetterCode": "LUX"
+  },
+  {
+    "code": "446",
+    "name": "Macanese",
+    "phoneCode": "853",
+    "twoLetterCode": "MO",
+    "threeLetterCode": "MAC"
+  },
+  {
+    "code": "807",
+    "name": "Macedonian",
+    "phoneCode": "389",
+    "twoLetterCode": "MK",
+    "threeLetterCode": "MKD"
+  },
+  {
+    "code": "450",
+    "name": "Malagasy",
+    "phoneCode": "261",
+    "twoLetterCode": "MG",
+    "threeLetterCode": "MDG"
+  },
+  {
+    "code": "454",
+    "name": "Malawian",
+    "phoneCode": "265",
+    "twoLetterCode": "MW",
+    "threeLetterCode": "MWI"
+  },
+  {
+    "code": "458",
+    "name": "Malaysian",
+    "phoneCode": "60",
+    "twoLetterCode": "MY",
+    "threeLetterCode": "MYS"
+  },
+  {
+    "code": "462",
+    "name": "Maldivian",
+    "phoneCode": "960",
+    "twoLetterCode": "MV",
+    "threeLetterCode": "MDV"
+  },
+  {
+    "code": "466",
+    "name": "Malian",
+    "phoneCode": "223",
+    "twoLetterCode": "ML",
+    "threeLetterCode": "MLI"
+  },
+  {
+    "code": "470",
+    "name": "Maltese",
+    "phoneCode": "356",
+    "twoLetterCode": "MT",
+    "threeLetterCode": "MLT"
+  },
+  {
+    "code": "584",
+    "name": "Marshallese",
+    "phoneCode": "692",
+    "twoLetterCode": "MH",
+    "threeLetterCode": "MHL"
+  },
+  {
+    "code": "474",
+    "name": "Martiniquais",
+    "phoneCode": "596",
+    "twoLetterCode": "MQ",
+    "threeLetterCode": "MTQ"
+  },
+  {
+    "code": "478",
+    "name": "Mauritanian",
+    "phoneCode": "222",
+    "twoLetterCode": "MR",
+    "threeLetterCode": "MRT"
+  },
+  {
+    "code": "480",
+    "name": "Mauritian",
+    "phoneCode": "230",
+    "twoLetterCode": "MU",
+    "threeLetterCode": "MUS"
+  },
+  {
+    "code": "484",
+    "name": "Mexican",
+    "phoneCode": "52",
+    "twoLetterCode": "MX",
+    "threeLetterCode": "MEX"
+  },
+  {
+    "code": "583",
+    "name": "Micronesian",
+    "phoneCode": "691",
+    "twoLetterCode": "FM",
+    "threeLetterCode": "FSM"
+  },
+  {
+    "code": "498",
+    "name": "Moldovan",
+    "phoneCode": "373",
+    "twoLetterCode": "MD",
+    "threeLetterCode": "MDA"
+  },
+  {
+    "code": "492",
+    "name": "Monegasque",
+    "phoneCode": "377",
+    "twoLetterCode": "MC",
+    "threeLetterCode": "MCO"
+  },
+  {
+    "code": "496",
+    "name": "Mongolian",
+    "phoneCode": "976",
+    "twoLetterCode": "MN",
+    "threeLetterCode": "MNG"
+  },
+  {
+    "code": "499",
+    "name": "Montenegrin",
+    "phoneCode": "382",
+    "twoLetterCode": "ME",
+    "threeLetterCode": "MNE"
+  },
+  {
+    "code": "500",
+    "name": "Montserratian",
+    "phoneCode": "1664",
+    "twoLetterCode": "MS",
+    "threeLetterCode": "MSR"
+  },
+  {
+    "code": "504",
+    "name": "Moroccan",
+    "phoneCode": "212",
+    "twoLetterCode": "MA",
+    "threeLetterCode": "MAR"
+  },
+  {
+    "code": "508",
+    "name": "Mozambican",
+    "phoneCode": "258",
+    "twoLetterCode": "MZ",
+    "threeLetterCode": "MOZ"
+  },
+  {
+    "code": "104",
+    "name": "Burmese",
+    "phoneCode": "95",
+    "twoLetterCode": "MM",
+    "threeLetterCode": "MMR"
+  },
+  {
+    "code": "516",
+    "name": "Namibian",
+    "phoneCode": "264",
+    "twoLetterCode": "NA",
+    "threeLetterCode": "NAM"
+  },
+  {
+    "code": "520",
+    "name": "Nauruan",
+    "phoneCode": "674",
+    "twoLetterCode": "NR",
+    "threeLetterCode": "NRU"
+  },
+  {
+    "code": "524",
+    "name": "Nepalese",
+    "phoneCode": "977",
+    "twoLetterCode": "NP",
+    "threeLetterCode": "NPL"
+  },
+  {
+    "code": "528",
+    "name": "Dutch",
+    "phoneCode": "31",
+    "twoLetterCode": "NL",
+    "threeLetterCode": "NLD"
+  },
+  {
+    "code": "554",
+    "name": "New Zealander",
+    "phoneCode": "64",
+    "twoLetterCode": "NZ",
+    "threeLetterCode": "NZL"
+  },
+  {
+    "code": "558",
+    "name": "Nicaraguan",
+    "phoneCode": "505",
+    "twoLetterCode": "NI",
+    "threeLetterCode": "NIC"
+  },
+  {
+    "code": "562",
+    "name": "Nigerien",
+    "phoneCode": "227",
+    "twoLetterCode": "NE",
+    "threeLetterCode": "NER"
+  },
+  {
+    "code": "566",
+    "name": "Nigerian",
+    "phoneCode": "234",
+    "twoLetterCode": "NG",
+    "threeLetterCode": "NGA"
+  },
+  {
+    "code": "570",
+    "name": "Niuean",
+    "phoneCode": "683",
+    "twoLetterCode": "NU",
+    "threeLetterCode": "NIU"
+  },
+  {
+    "code": "574",
+    "name": "Northern Irish",
+    "phoneCode": "672",
+    "twoLetterCode": "NF",
+    "threeLetterCode": "NFK"
+  },
+  {
+    "code": "578",
+    "name": "Norwegian",
+    "phoneCode": "47",
+    "twoLetterCode": "NO",
+    "threeLetterCode": "NOR"
+  },
+  {
+    "code": "512",
+    "name": "Omani",
+    "phoneCode": "968",
+    "twoLetterCode": "OM",
+    "threeLetterCode": "OMN"
+  },
+  {
+    "code": "586",
+    "name": "Pakistani",
+    "phoneCode": "92",
+    "twoLetterCode": "PK",
+    "threeLetterCode": "PAK"
+  },
+  {
+    "code": "585",
+    "name": "Palauan",
+    "phoneCode": "680",
+    "twoLetterCode": "PW",
+    "threeLetterCode": "PLW"
+  },
+  {
+    "code": "275",
+    "name": "Palestinian",
+    "phoneCode": "970",
+    "twoLetterCode": "PS",
+    "threeLetterCode": "PSE"
+  },
+  {
+    "code": "591",
+    "name": "Panamanian",
+    "phoneCode": "507",
+    "twoLetterCode": "PA",
+    "threeLetterCode": "PAN"
+  },
+  {
+    "code": "598",
+    "name": "Papua New Guinean",
+    "phoneCode": "675",
+    "twoLetterCode": "PG",
+    "threeLetterCode": "PNG"
+  },
+  {
+    "code": "600",
+    "name": "Paraguayan",
+    "phoneCode": "595",
+    "twoLetterCode": "PY",
+    "threeLetterCode": "PRY"
+  },
+  {
+    "code": "604",
+    "name": "Peruvian",
+    "phoneCode": "51",
+    "twoLetterCode": "PE",
+    "threeLetterCode": "PER"
+  },
+  {
+    "code": "608",
+    "name": "Filipino",
+    "phoneCode": "63",
+    "twoLetterCode": "PH",
+    "threeLetterCode": "PHL"
+  },
+  {
+    "code": "612",
+    "name": "Pitcairn Islander",
+    "phoneCode": "0",
+    "twoLetterCode": "PN",
+    "threeLetterCode": "PCN"
+  },
+  {
+    "code": "616",
+    "name": "Polish",
+    "phoneCode": "48",
+    "twoLetterCode": "PL",
+    "threeLetterCode": "POL"
+  },
+  {
+    "code": "620",
+    "name": "Portuguese",
+    "phoneCode": "351",
+    "twoLetterCode": "PT",
+    "threeLetterCode": "PRT"
+  },
+  {
+    "code": "630",
+    "name": "Puerto Rican",
+    "phoneCode": "1787",
+    "twoLetterCode": "PR",
+    "threeLetterCode": "PRI"
+  },
+  {
+    "code": "634",
+    "name": "Qatari",
+    "phoneCode": "974",
+    "twoLetterCode": "QA",
+    "threeLetterCode": "QAT"
+  },
+  {
+    "code": "642",
+    "name": "Romanian",
+    "phoneCode": "40",
+    "twoLetterCode": "RO",
+    "threeLetterCode": "ROU"
+  },
+  {
+    "code": "643",
+    "name": "Russian",
+    "phoneCode": "7",
+    "twoLetterCode": "RU",
+    "threeLetterCode": "RUS"
+  },
+  {
+    "code": "646",
+    "name": "Rwandan",
+    "phoneCode": "250",
+    "twoLetterCode": "RW",
+    "threeLetterCode": "RWA"
+  },
+  {
+    "code": "654",
+    "name": "St Helenian",
+    "phoneCode": "290",
+    "twoLetterCode": "SH",
+    "threeLetterCode": "SHN"
+  },
+  {
+    "code": "659",
+    "name": "Kittitian",
+    "phoneCode": "1869",
+    "twoLetterCode": "KN",
+    "threeLetterCode": "KNA"
+  },
+  {
+    "code": "662",
+    "name": "St Lucian",
+    "phoneCode": "1758",
+    "twoLetterCode": "LC",
+    "threeLetterCode": "LCA"
+  },
+  {
+    "code": "663",
+    "name": "Saint-Martinoise",
+    "phoneCode": "590",
+    "twoLetterCode": "MF",
+    "threeLetterCode": "MAF"
+  },
+  {
+    "code": "670",
+    "name": "Vincentian",
+    "phoneCode": "1784",
+    "twoLetterCode": "VC",
+    "threeLetterCode": "VCT"
+  },
+  {
+    "code": "882",
+    "name": "Samoan",
+    "phoneCode": "684",
+    "twoLetterCode": "WS",
+    "threeLetterCode": "WSM"
+  },
+  {
+    "code": "955",
+    "name": "Scottish",
+    "phoneCode": "44",
+    "twoLetterCode": "GB-SCT",
+    "threeLetterCode": "GBR-SCT"
+  },
+  {
+    "code": "674",
+    "name": "Sammarinese",
+    "phoneCode": "378",
+    "twoLetterCode": "SM",
+    "threeLetterCode": "SMR"
+  },
+  {
+    "code": "678",
+    "name": "Sao Tomean",
+    "phoneCode": "239",
+    "twoLetterCode": "ST",
+    "threeLetterCode": "STP"
+  },
+  {
+    "code": "682",
+    "name": "Saudi Arabian",
+    "phoneCode": "966",
+    "twoLetterCode": "SA",
+    "threeLetterCode": "SAU"
+  },
+  {
+    "code": "686",
+    "name": "Senegalese",
+    "phoneCode": "221",
+    "twoLetterCode": "SN",
+    "threeLetterCode": "SEN"
+  },
+  {
+    "code": "688",
+    "name": "Serbian",
+    "phoneCode": "381",
+    "twoLetterCode": "RS",
+    "threeLetterCode": "SRB"
+  },
+  {
+    "code": "690",
+    "name": "Citizen of Seychelles",
+    "phoneCode": "248",
+    "twoLetterCode": "SC",
+    "threeLetterCode": "SYC"
+  },
+  {
+    "code": "694",
+    "name": "Sierra Leonean",
+    "phoneCode": "232",
+    "twoLetterCode": "SL",
+    "threeLetterCode": "SLE"
+  },
+  {
+    "code": "702",
+    "name": "Singaporean",
+    "phoneCode": "65",
+    "twoLetterCode": "SG",
+    "threeLetterCode": "SGP"
+  },
+  {
+    "code": "534",
+    "name": "Sint Maarten",
+    "phoneCode": "1",
+    "twoLetterCode": "SX",
+    "threeLetterCode": "SXM"
+  },
+  {
+    "code": "703",
+    "name": "Slovak",
+    "phoneCode": "421",
+    "twoLetterCode": "SK",
+    "threeLetterCode": "SVK"
+  },
+  {
+    "code": "705",
+    "name": "Slovenian",
+    "phoneCode": "386",
+    "twoLetterCode": "SI",
+    "threeLetterCode": "SVN"
+  },
+  {
+    "code": "90",
+    "name": "Solomon Islander",
+    "phoneCode": "677",
+    "twoLetterCode": "SB",
+    "threeLetterCode": "SLB"
+  },
+  {
+    "code": "706",
+    "name": "Somali",
+    "phoneCode": "252",
+    "twoLetterCode": "SO",
+    "threeLetterCode": "SOM"
+  },
+  {
+    "code": "710",
+    "name": "South African",
+    "phoneCode": "27",
+    "twoLetterCode": "ZA",
+    "threeLetterCode": "ZAF"
+  },
+  {
+    "code": "728",
+    "name": "South Sudanese",
+    "phoneCode": "211",
+    "twoLetterCode": "SS",
+    "threeLetterCode": "SSD"
+  },
+  {
+    "code": "724",
+    "name": "Spanish",
+    "phoneCode": "34",
+    "twoLetterCode": "ES",
+    "threeLetterCode": "ESP"
+  },
+  {
+    "code": "144",
+    "name": "Sri Lankan",
+    "phoneCode": "94",
+    "twoLetterCode": "LK",
+    "threeLetterCode": "LKA"
+  },
+  {
+    "code": "729",
+    "name": "Sudanese",
+    "phoneCode": "249",
+    "twoLetterCode": "SD",
+    "threeLetterCode": "SDN"
+  },
+  {
+    "code": "740",
+    "name": "Surinamese",
+    "phoneCode": "597",
+    "twoLetterCode": "SR",
+    "threeLetterCode": "SUR"
+  },
+  {
+    "code": "744",
+    "name": "Svalbard",
+    "phoneCode": "47",
+    "twoLetterCode": "SJ",
+    "threeLetterCode": "SJM"
+  },
+  {
+    "code": "748",
+    "name": "Swazi",
+    "phoneCode": "268",
+    "twoLetterCode": "SZ",
+    "threeLetterCode": "SWZ"
+  },
+  {
+    "code": "752",
+    "name": "Swedish",
+    "phoneCode": "46",
+    "twoLetterCode": "SE",
+    "threeLetterCode": "SWE"
+  },
+  {
+    "code": "756",
+    "name": "Swiss",
+    "phoneCode": "41",
+    "twoLetterCode": "CH",
+    "threeLetterCode": "CHE"
+  },
+  {
+    "code": "760",
+    "name": "Syrian",
+    "phoneCode": "963",
+    "twoLetterCode": "SY",
+    "threeLetterCode": "SYR"
+  },
+  {
+    "code": "158",
+    "name": "Taiwanese",
+    "phoneCode": "886",
+    "twoLetterCode": "TW",
+    "threeLetterCode": "TWN"
+  },
+  {
+    "code": "762",
+    "name": "Tajik",
+    "phoneCode": "992",
+    "twoLetterCode": "TJ",
+    "threeLetterCode": "TJK"
+  },
+  {
+    "code": "834",
+    "name": "Tanzanian",
+    "phoneCode": "255",
+    "twoLetterCode": "TZ",
+    "threeLetterCode": "TZA"
+  },
+  {
+    "code": "764",
+    "name": "Thai",
+    "phoneCode": "66",
+    "twoLetterCode": "TH",
+    "threeLetterCode": "THA"
+  },
+  {
+    "code": "626",
+    "name": "East Timorese",
+    "phoneCode": "670",
+    "twoLetterCode": "TL",
+    "threeLetterCode": "TLS"
+  },
+  {
+    "code": "768",
+    "name": "Togolese",
+    "phoneCode": "228",
+    "twoLetterCode": "TG",
+    "threeLetterCode": "TGO"
+  },
+  {
+    "code": "776",
+    "name": "Tongan",
+    "phoneCode": "676",
+    "twoLetterCode": "TO",
+    "threeLetterCode": "TON"
+  },
+  {
+    "code": "780",
+    "name": "Trinidadian",
+    "phoneCode": "1868",
+    "twoLetterCode": "TT",
+    "threeLetterCode": "TTO"
+  },
+  {
+    "code": "788",
+    "name": "Tunisian",
+    "phoneCode": "216",
+    "twoLetterCode": "TN",
+    "threeLetterCode": "TUN"
+  },
+  {
+    "code": "792",
+    "name": "Turkish",
+    "phoneCode": "90",
+    "twoLetterCode": "TR",
+    "threeLetterCode": "TUR"
+  },
+  {
+    "code": "795",
+    "name": "Turkmen",
+    "phoneCode": "993",
+    "twoLetterCode": "TM",
+    "threeLetterCode": "TKM"
+  },
+  {
+    "code": "796",
+    "name": "Turks and Caicos Islander",
+    "phoneCode": "1649",
+    "twoLetterCode": "TC",
+    "threeLetterCode": "TCA"
+  },
+  {
+    "code": "798",
+    "name": "Tuvaluan",
+    "phoneCode": "688",
+    "twoLetterCode": "TV",
+    "threeLetterCode": "TUV"
+  },
+  {
+    "code": "800",
+    "name": "Ugandan",
+    "phoneCode": "256",
+    "twoLetterCode": "UG",
+    "threeLetterCode": "UGA"
+  },
+  {
+    "code": "804",
+    "name": "Ukrainian",
+    "phoneCode": "380",
+    "twoLetterCode": "UA",
+    "threeLetterCode": "UKR"
+  },
+  {
+    "code": "826",
+    "name": "British",
+    "phoneCode": "44",
+    "twoLetterCode": "GB",
+    "threeLetterCode": "GBR"
+  },
+  {
+    "code": "840",
+    "name": "American",
+    "phoneCode": "1",
+    "twoLetterCode": "US",
+    "threeLetterCode": "USA"
+  },
+  {
+    "code": "858",
+    "name": "Uruguayan",
+    "phoneCode": "598",
+    "twoLetterCode": "UY",
+    "threeLetterCode": "URY"
+  },
+  {
+    "code": "860",
+    "name": "Uzbek",
+    "phoneCode": "998",
+    "twoLetterCode": "UZ",
+    "threeLetterCode": "UZB"
+  },
+  {
+    "code": "548",
+    "name": "Citizen of Vanuatu",
+    "phoneCode": "678",
+    "twoLetterCode": "VU",
+    "threeLetterCode": "VUT"
+  },
+  {
+    "code": "862",
+    "name": "Venezuelan",
+    "phoneCode": "58",
+    "twoLetterCode": "VE",
+    "threeLetterCode": "VEN"
+  },
+  {
+    "code": "704",
+    "name": "Vietnamese",
+    "phoneCode": "84",
+    "twoLetterCode": "VN",
+    "threeLetterCode": "VNM"
+  },
+  {
+    "code": "92",
+    "name": "British Virgin Islander",
+    "phoneCode": "1284",
+    "twoLetterCode": "VG",
+    "threeLetterCode": "VGB"
+  },
+  {
+    "code": "876",
+    "name": "Wallisian",
+    "phoneCode": "681",
+    "twoLetterCode": "WF",
+    "threeLetterCode": "WLF"
+  },
+  {
+    "code": "887",
+    "name": "Yemeni",
+    "phoneCode": "967",
+    "twoLetterCode": "YE",
+    "threeLetterCode": "YEM"
+  },
+  {
+    "code": "894",
+    "name": "Zambian",
+    "phoneCode": "260",
+    "twoLetterCode": "ZM",
+    "threeLetterCode": "ZMB"
+  },
+  {
+    "code": "716",
+    "name": "Zimbabwean",
+    "phoneCode": "263",
+    "twoLetterCode": "ZW",
+    "threeLetterCode": "ZWE"
+  }
+]
