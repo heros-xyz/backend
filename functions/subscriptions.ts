@@ -11,16 +11,23 @@ interface SuscriptionCreateParams {
   membershipTier: string
 }
 
-interface SuscriptionDoc {
-  stripeSubscription: Stripe.Response<Stripe.Subscription>
-  maker: string
-  taker: string
-  takerData:{
-    avatar: string
-    name: string
-    email: string
-  }
-  createdAt: Date
+export enum SubscriptionStatus {
+  DRAFT = 0,
+  ACTIVE = 1,
+  EXPIRED = 2,
+  CANCEL = 3,
+}
+export interface SubscriptionDoc {
+  stripeSubscription: Stripe.Response<Stripe.Subscription>;
+  maker: string;
+  taker: string;
+  status: SubscriptionStatus;
+  takerData: {
+    avatar: string;
+    name: string;
+    email: string;
+  };
+  createdAt: Date;
 }
 
 const stripeSecret = "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw"
@@ -47,7 +54,7 @@ exports.create = functions.https.onCall(async ({paymentMethod, membershipTier}: 
   const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
 
   const suscriptionDoc = await admin.firestore().collection("subscriptions").doc(`${uid}_${membershipTierData.uid}`).get()
-  const suscriptionDocData = suscriptionDoc.data() as SuscriptionDoc
+  const suscriptionDocData = suscriptionDoc.data() as SubscriptionDoc
   if (suscriptionDocData && suscriptionDocData.stripeSubscription as Stripe.Response<Stripe.Subscription>) {
     await stripe.subscriptions.del(suscriptionDocData.stripeSubscription.id)
   }
@@ -76,7 +83,7 @@ exports.create = functions.https.onCall(async ({paymentMethod, membershipTier}: 
       name: userDocData.fullName
     }
 
-  } as SuscriptionDoc,{merge: true})
+  } as SubscriptionDoc,{merge: true})
 })
 
 exports.delete = functions.https.onCall(async (subscriptionId: string, context) => {
@@ -84,8 +91,8 @@ exports.delete = functions.https.onCall(async (subscriptionId: string, context) 
   if (!uid)
     throw new functions.https.HttpsError("permission-denied", "uid")
 
-  const suscriptionDoc = await admin.firestore().collection("subscriptions").doc(`${uid}_${membershipTierData.uid}`).get()
-  const suscriptionDocData = suscriptionDoc.data() as SuscriptionDoc
+  const suscriptionDoc = await admin.firestore().collection("subscriptions").doc(subscriptionId).get()
+  const suscriptionDocData = suscriptionDoc.data() as SubscriptionDoc
   if (!suscriptionDocData || suscriptionDocData.taker !== uid)
     throw new functions.https.HttpsError("permission-denied", "subscription")
 
