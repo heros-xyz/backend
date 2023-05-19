@@ -107,6 +107,7 @@ exports.create = functions.https.onCall(
         maker: membershipTierData.uid,
         taker: uid,
         createdAt: new Date(),
+        autoRenew: true,
         expiredDate: subscription.current_period_end,
         makerData: {
           // ATHLETE
