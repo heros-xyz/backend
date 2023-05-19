@@ -14,7 +14,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions --project heros-dev-386505",
     "logs": "firebase functions:log",
-    "emulators": "firebase emulators:start --only auth,firestore,functions,hosting,pubsub,storage --inspect-functions --import=./data-path --export-on-exit --project heros-dev-386505"
+    "emulators": "yarn watch |fi firebase emulators:start --only auth,firestore,functions,storage --inspect-functions  --project heros-dev-386505"
   },
   "engines": {
     "node": "18"

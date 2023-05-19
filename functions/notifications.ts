@@ -57,9 +57,8 @@ interface Notification {
   status: NotificationStatusType;
   message?: string;
   params?: any;
-  uid?: string;
   to: string; // id to get the post comment or tier
-  targetUser: string; // query notification to user in frontend
+  uid?: string;
 }
 
 const converter = {
@@ -117,7 +116,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
       await admin.firestore().doc(`user/${onCreateData.uid}`).get()
     ).data() as User;
 
-    let params: Notification = {};
+    let params: Notification|null = null
 
     // TODO: maybe switch statement?
     if (onCreateData.toType === "POST") {
@@ -126,18 +125,13 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
         await admin.firestore().doc(`post/${onCreateData.to}`).get()
       ).data() as Post;
 
-      // the user that create the post
-      const targetUserId = (
-        await admin.firestore().doc(`user/${post.uid}`).get()
-      ).id;
-
       if (userMaker?.profileType === "ATHLETE") {
         params = {
           createdAt: new Date(),
           readAt: null,
           type: "post",
           to: onCreateId,
-          targetUser: targetUserId,
+          uid: post.uid,
           message: "notification.from-athlete.like.interaction",
           status: NotificationStatusType.NOT_READ, // TODO: check this
           eventType: NotificationEventType.ATHLETE_LIKE_INTERACTION,
@@ -168,14 +162,15 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
           readAt: null,
           type: "like",
           to: comment.post, // POST
-          targetUser: commentMaker.id,
+          uid: commentMaker.uid,
           status: NotificationStatusType.NOT_READ, // TODO: check this
           eventType: NotificationEventType.ATHLETE_LIKE_COMMENT,
         };
       }
     }
 
-    await admin.firestore().collection("notification").add(params);
+    if (params)
+      await admin.firestore().collection("notification").add(params);
   } catch (error) {
     functions.logger.error("[ERROR] onReactionCreate", error);
   }
@@ -200,7 +195,6 @@ const refComments = functions.firestore.document("comments/{docId}");
 
 exports.onCommentCreate = refComments.onCreate(async (change) => {
   const onCreateData = change.data() as Comment;
-  const onCreateId = change.id;
 
   functions.logger.log("onCommentCreate", onCreateData);
 
@@ -209,7 +203,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
       await admin.firestore().doc(`user/${onCreateData.uid}`).get()
     ).data() as User;
 
-    let params: Notification = {};
+    let params: Notification;
 
     // TODO: maybe switch statement?
     if (userMaker?.profileType === "ATHLETE") {
@@ -233,7 +227,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
             createdAt: new Date(),
             readAt: null,
             type: "comment",
-            targetUser: parentCommentMaker.id,
+            uid: parentCommentMaker.uid,
             to: onCreateData.post, // this should be the post
             status: NotificationStatusType.NOT_READ, // TODO: check this
             eventType: NotificationEventType.ATHLETE_REPLY_COMMENT,
@@ -258,7 +252,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
         createdAt: new Date(),
         readAt: null,
         type: "comment",
-        targetUser: postMaker.id,
+        uid: postMaker.uid,
         to: onCreateData.post, // this should be the post
         status: NotificationStatusType.NOT_READ, // TODO: check this
         eventType: NotificationEventType.ATHLETE_COMMENT_INTERACTION,
