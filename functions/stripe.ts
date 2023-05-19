@@ -3,23 +3,23 @@ import * as functions from "firebase-functions";
 import Stripe from "stripe";
 
 export enum SubscriptionStatus {
-    DRAFT = 0,
-    ACTIVE = 1,
-    EXPIRED = 2,
-    CANCEL = 3,
+  DRAFT = 0,
+  ACTIVE = 1,
+  EXPIRED = 2,
+  CANCEL = 3,
 }
 
 function getSubscriptionId(data: Stripe.Invoice) {
-    let subscriptionId;
+  let subscriptionId;
 
-    for (const invoiceLineItem of data.lines.data) {
-        if (invoiceLineItem.metadata.subscriptionId) {
-            subscriptionId = invoiceLineItem.metadata.subscriptionId;
-            break;
-        }
+  for (const invoiceLineItem of data.lines.data) {
+    if (invoiceLineItem.metadata.subscriptionId) {
+      subscriptionId = invoiceLineItem.metadata.subscriptionId;
+      break;
     }
+  }
 
-    return subscriptionId;
+  return subscriptionId;
 }
 
 async function updateFans(atlheteId: string) {
@@ -143,7 +143,7 @@ const events = {
       });
   },
   "customer.subscription.deleted": async (event: Stripe.Event) => {
-    const data = event.data;
+    const data = event.data as any;
     const metadata = data.object?.metadata;
     const subscriptionId = metadata?.subscriptionId as string;
     if (!subscriptionId) {
@@ -166,31 +166,34 @@ const events = {
 
 const stripeSecret =
   "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw";
-const stripeEndpointSecret = "whsec_9b879f3bf39c19e7f9cdf733cb84ae7364d3687c3d2b781694d9b32b82b8b475"
+const stripeEndpointSecret =
+  "whsec_9b879f3bf39c19e7f9cdf733cb84ae7364d3687c3d2b781694d9b32b82b8b475";
 export const webhook = functions.https.onRequest((req, res) => {
-    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
-    const sig = req.headers["stripe-signature"];
-    if (!sig) {
-        res.json({received: true});
-        return;
-    }
-    let event: Stripe.Event;
-    try {
-        event = stripe.webhooks.constructEvent(req.rawBody, sig || "", stripeEndpointSecret);
-    } catch (err: any) {
-        console.error("Error processing event", err)
-        res.status(400).send();
-        return;
-    }
+  const stripe = new Stripe(stripeSecret, { apiVersion: "2022-11-15" });
+  const sig = req.headers["stripe-signature"];
+  if (!sig) {
+    res.json({ received: true });
+    return;
+  }
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.rawBody,
+      sig || "",
+      stripeEndpointSecret
+    );
+  } catch (err: any) {
+    console.error("Error processing event", err);
+    res.status(400).send();
+    return;
+  }
 
-    if (Object.keys(events).includes(event.type)) {
-        // @ts-ignore
-        const call = events[event.type](event) as Promise<void>
-        call.then(
-            ()=>res.json({received: true})
-        )
-    } else {
-        console.log("Unexpected event", event.type)
-        res.json({received: true})
-    }
+  if (Object.keys(events).includes(event.type)) {
+    // @ts-ignore
+    const call = events[event.type](event) as Promise<void>;
+    call.then(() => res.json({ received: true }));
+  } else {
+    console.log("Unexpected event", event.type);
+    res.json({ received: true });
+  }
 });

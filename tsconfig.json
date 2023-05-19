@@ -7,7 +7,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    //"esModuleInterop": true, // activate for fireway
+    "esModuleInterop": true,
     "resolveJsonModule": true
   },
   "compileOnSave": true,

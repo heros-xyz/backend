@@ -5,18 +5,17 @@ import { PaymentMethod } from "./paymentMethod";
 import { User } from "./auth";
 import { MembershipTier } from "./membershipTiers";
 
+interface SubscriptionCreateParams {
+  paymentMethod: string;
+  membershipTier: string;
+}
+
 export enum SubscriptionStatus {
   DRAFT = 0,
   ACTIVE = 1,
   EXPIRED = 2,
   CANCEL = 3,
 }
-
-interface SubscriptionCreateParams {
-  paymentMethod: string;
-  membershipTier: string;
-}
-
 export interface SubscriptionDoc {
   stripeSubscription: Stripe.Response<Stripe.Subscription>;
   maker: string;
@@ -102,7 +101,6 @@ exports.create = functions.https.onCall(
         maker: membershipTierData.uid,
         taker: uid,
         createdAt: new Date(),
-        autoRenew: true,
         expiredDate: subscription.current_period_end,
         makerData: {
           // ATHLETE
@@ -122,6 +120,7 @@ exports.create = functions.https.onCall(
             `${userDocData?.firstName} ${userDocData?.lastName}`,
         },
         status: SubscriptionStatus.DRAFT,
+        autoRenew: true,
       } as SubscriptionDoc,
       { merge: true }
     );
@@ -153,5 +152,3 @@ exports.delete = functions.https.onCall(
     );
   }
 );
-
-
