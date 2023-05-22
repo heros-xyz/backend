@@ -76,9 +76,7 @@ const refPost = functions.firestore.document("post/{docId}");
 exports.onPostCreate = refPost.onCreate(async (change) => {
   const onCreateData = change.data();
   const onCreateId = change.id;
-
   functions.logger.log("onPostUpdate", onCreateData);
-
   try {
     const params: Notification = {
       createdAt: new Date(),
@@ -88,7 +86,14 @@ exports.onPostCreate = refPost.onCreate(async (change) => {
       status: NotificationStatusType.NOT_READ, // TODO: check this
       eventType: NotificationEventType.ATHLETE_LIKE_INTERACTION,
     };
+
     await admin.firestore().collection("notification").add(params);
+    const makerRef = admin
+      .firestore()
+      .doc(`athleteProfile/${onCreateData.uid}`);
+    const makerRefData = (await makerRef.get()).data();
+    const count = (makerRefData?.totalInteractionCount ?? 0) + 1;
+    await makerRef.update({ totalInteractionCount: count });
   } catch (error) {
     functions.logger.error("[ERROR] onPostUpdate", error);
   }
