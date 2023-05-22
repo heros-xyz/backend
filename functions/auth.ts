@@ -61,8 +61,14 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
 
 exports.signup = functions2.https.onCall(async (request: any) => {
   const { email, profileType } = request.data;
-  let user: admin.auth.UserRecord;
-  user = await admin.auth().getUserByEmail(email);
+  let user: admin.auth.UserRecord | null;
+  user = await admin
+    .auth()
+    .getUserByEmail(email)
+    .catch(() => {
+      return null;
+    });
+
   try {
     if (user) {
       throw new functions2.https.HttpsError(
@@ -87,12 +93,12 @@ exports.signup = functions2.https.onCall(async (request: any) => {
   // Crear el secreto OTP
   const { base32: secret } = speakeasy.generateSecret({ length: 20 });
 
-  await admin.firestore().doc(`user/${user.uid}`).set({
+  await admin.firestore().doc(`user/${user?.uid}`).set({
     email,
     profileType,
   });
 
-  await admin.firestore().doc(`otp/${user.uid}`).set({
+  await admin.firestore().doc(`otp/${user?.uid}`).set({
     secret,
   });
 
