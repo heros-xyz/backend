@@ -31,7 +31,7 @@ async function updateFans(atlheteId: string) {
     .where("maker", "==", atlheteId)
     .where("status", "==", SubscriptionStatus.ACTIVE)
     .get();
-  //update Athlet
+  //update Athlete
   await admin.firestore().collection("athleteProfile").doc(atlheteId).update({
     totalSubCount: fansCount.docs.length,
   });
@@ -89,7 +89,7 @@ const events = {
     const makerRef = await admin.firestore().doc(`user/${maker}`).get();
     const makerData = makerRef?.data();
     const currentAmount = makerData?.netAmount ?? 0;
-    const price = new BigNumber(invoice?.data?.().amount_paid);
+    const price = new BigNumber(invoice?.data?.()?.amount_paid);
     const addAmount = price
       .multipliedBy(new BigNumber(100).minus(new BigNumber(HEROS_PLATFORM_FEE)))
       .dividedBy(100);
@@ -166,6 +166,7 @@ const events = {
       .collection("subscriptions")
       .doc(subscriptionId)
       .update({
+        autoRenew: false,
         status: SubscriptionStatus.CANCEL,
       });
     await updateFans(subscriptionId.split("_")[1]);
