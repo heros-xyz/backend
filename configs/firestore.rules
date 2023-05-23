@@ -57,7 +57,7 @@ service cloud.firestore {
     }
     match /user/{uid} {
       allow read:  if isAuthenticatedWithUid(uid);
-      allow write: if isAuthenticatedWithUid(uid) && notTouchFields(['stripeCustomer']);
+      allow write: if isAuthenticatedWithUid(uid) && notTouchFields(['stripeCustomer','netAmount']);
     }
     match /subscriptions/{document=**} {
       allow read:  if isAuthenticatedWithUids([resource.data.maker,resource.data.taker]);

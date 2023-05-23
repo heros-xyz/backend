@@ -201,6 +201,7 @@ export const webhook = functions.https.onRequest((req, res) => {
   }
 
   if (Object.keys(events).includes(event.type)) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const call = events[event.type](event) as Promise<void>;
     call.then(() => res.json({ received: true }));
