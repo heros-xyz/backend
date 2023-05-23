@@ -89,7 +89,7 @@ const events = {
     const makerRef = await admin.firestore().doc(`user/${maker}`).get();
     const makerData = makerRef?.data();
     const currentAmount = makerData?.netAmount ?? 0;
-    const price = new BigNumber(invoice?.data?.().amount_paid);
+    const price = new BigNumber(invoice?.data?.()?.amount_paid);
     const addAmount = price
       .multipliedBy(new BigNumber(100).minus(new BigNumber(HEROS_PLATFORM_FEE)))
       .dividedBy(100);
