@@ -31,7 +31,7 @@ async function updateFans(atlheteId: string) {
     .where("maker", "==", atlheteId)
     .where("status", "==", SubscriptionStatus.ACTIVE)
     .get();
-  //update Athlet
+  //update Athlete
   await admin.firestore().collection("athleteProfile").doc(atlheteId).update({
     totalSubCount: fansCount.docs.length,
   });
@@ -166,6 +166,7 @@ const events = {
       .collection("subscriptions")
       .doc(subscriptionId)
       .update({
+        autoRenew: false,
         status: SubscriptionStatus.CANCEL,
       });
     await updateFans(subscriptionId.split("_")[1]);
