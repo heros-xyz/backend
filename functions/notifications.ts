@@ -282,8 +282,9 @@ exports.onSubscriptionUpdate = refSubscriptions.onUpdate(async (change) => {
       createdAt: new Date(),
       readAt: null,
       type: "subscription",
-      targetUser: afterData?.maker,
+      uid: afterData?.maker, // ATHLETE
       to: afterDataId,
+      sourceId: afterData?.taker, // FAN
       status: NotificationStatusType.NOT_READ,
       eventType: NotificationEventType.FAN_SUBSCRIBE_ATHLETE,
     };
