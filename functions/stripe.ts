@@ -4,6 +4,9 @@ import * as functions from "firebase-functions";
 import Stripe from "stripe";
 import { HEROS_PLATFORM_FEE } from "./constants/subscription";
 
+const stripeKey = functions.params.defineSecret("STRIPE_KEY");
+const stripeKeyWebhook = functions.params.defineSecret("STRIPE_KEY_WEBHOOK");
+
 export enum SubscriptionStatus {
   DRAFT = 0,
   ACTIVE = 1,
@@ -177,9 +180,9 @@ const events = {
 };
 
 export const webhook = functions.runWith({
-  secrets: ["STRIPE_KEY","STRIPE_KEY_WEBHOOK"]
+  secrets: [stripeKey,stripeKeyWebhook]
 }).https.onRequest((req, res) => {
-  const stripe = new Stripe(process.env.STRIPE_KEY!, { apiVersion: "2022-11-15" });
+  const stripe = new Stripe(stripeKey.value(), { apiVersion: "2022-11-15" });
   const sig = req.headers["stripe-signature"];
   if (!sig) {
     res.json({ received: true });
@@ -190,7 +193,7 @@ export const webhook = functions.runWith({
     event = stripe.webhooks.constructEvent(
       req.rawBody,
       sig || "",
-      process.env.STRIPE_KEY_WEBHOOK!
+      stripeKeyWebhook.value()
     );
   } catch (err: any) {
     console.error("Error processing event", err);

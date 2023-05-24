@@ -2,11 +2,13 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
 
+const stripeKey = functions.params.defineSecret("STRIPE_KEY");
+
 export const create = functions.runWith({
-    secrets: ["STRIPE_KEY"]
+    secrets: [stripeKey]
 }).auth.user().onCreate(async ({email, uid}) => {
     try {
-        const stripe = new Stripe(process.env.STRIPE_KEY!, {apiVersion: "2022-11-15"});
+        const stripe = new Stripe(stripeKey.value(), {apiVersion: "2022-11-15"});
         const customer = await stripe.customers.create({
             email: email,
             metadata: { firebaseUID: uid },

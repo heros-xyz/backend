@@ -4,6 +4,10 @@ import * as functions from "firebase-functions";
 import * as functions2 from "firebase-functions/v2";
 import * as speakeasy from "speakeasy";
 import sgMail from "@sendgrid/mail";
+const sendgridSecret = functions.params.defineSecret("SENDGRID_KEY");
+const sendgridTemplateId = functions.params.defineString("SENDGRID_TEMPLATE_ID", {
+  description: "Sendgrid template id",
+});
 
 export interface User {
   uid: string;
@@ -17,13 +21,13 @@ export interface User {
 }
 
 async function sendEmail(email: string, secret: string) {
-  sgMail.setApiKey(process.env.SENDGRID_KEY!);
+  sgMail.setApiKey(sendgridSecret.value());
   const msg = {
     to: email,
     from: {
       email: "hi@heros.xyz",
     },
-    templateId: process.env.SENDGRID_TEMPLATE_ID!,
+    templateId: sendgridTemplateId.value(),
     dynamicTemplateData: {
       otp: speakeasy.totp({
         secret: secret,
@@ -44,7 +48,7 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
   );
 });
 
-exports.signup = functions2.https.onCall({secrets: ["SENDGRID_KEY"]},async (request: any) => {
+exports.signup = functions2.https.onCall({secrets: [sendgridSecret]},async (request: any) => {
   const {email, profileType} = request.data;
   let user: admin.auth.UserRecord | false = await admin.auth().getUserByEmail(email).catch(() => false);
 
@@ -81,7 +85,7 @@ exports.signup = functions2.https.onCall({secrets: ["SENDGRID_KEY"]},async (requ
   await sendEmail(email, otp, );
 });
 
-exports.signin = functions2.https.onCall({secrets: ["SENDGRID_KEY"]},async (request: any) => {
+exports.signin = functions2.https.onCall({secrets: [sendgridSecret]},async (request: any) => {
   const { email } = request.data;
   let userRecord: admin.auth.UserRecord;
   try {

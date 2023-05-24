@@ -5,6 +5,8 @@ import { PaymentMethod } from "./paymentMethod";
 import { User } from "./auth";
 import { MembershipTier } from "./membershipTiers";
 
+const stripeKey = functions.params.defineSecret("STRIPE_KEY")
+
 interface SubscriptionCreateParams {
   paymentMethod: string;
   membershipTier: string;
@@ -30,7 +32,7 @@ export interface SubscriptionDoc {
 }
 
 exports.create = functions.runWith({
-    secrets: ["STRIPE_KEY"]
+    secrets: [stripeKey]
 }).https.onCall(
   async (
     { paymentMethod, membershipTier }: SubscriptionCreateParams,
@@ -63,7 +65,7 @@ exports.create = functions.runWith({
     if (!membershipTierData || !membershipTierData.stripeProduct)
       throw new functions.https.HttpsError("permission-denied", "product");
 
-    const stripe = new Stripe(process.env.STRIPE_KEY!, { apiVersion: "2022-11-15" });
+    const stripe = new Stripe(stripeKey.value(), { apiVersion: "2022-11-15" });
 
     const subscriptionDoc = await admin
       .firestore()
@@ -144,7 +146,7 @@ exports.delete = functions.runWith({
     if (!subscriptionDocData || subscriptionDocData.taker !== uid)
       throw new functions.https.HttpsError("permission-denied", "subscription");
 
-    const stripe = new Stripe(process.env.STRIPE_KEY!, { apiVersion: "2022-11-15" });
+    const stripe = new Stripe(stripeKey.value(), { apiVersion: "2022-11-15" });
     await stripe.subscriptions.del(subscriptionDocData.stripeSubscription.id);
     return subscriptionDoc.ref.set(
       {

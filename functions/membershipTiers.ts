@@ -1,6 +1,8 @@
 import * as functions from "firebase-functions";
 import Stripe from "stripe";
 
+const stripeKey = functions.params.defineSecret("STRIPE_KEY");
+
 export interface MembershipTier {
     id?: string
     name: string
@@ -15,7 +17,7 @@ export interface MembershipTier {
 }
 
 const baseRef = functions.runWith({
-    secrets: ["STRIPE_KEY"]
+    secrets: [stripeKey]
 }).firestore.document("membershipTiers/{docId}")
 
 exports.create = baseRef.onCreate(async (change) => {
@@ -23,7 +25,7 @@ exports.create = baseRef.onCreate(async (change) => {
     let product: Stripe.Response<Stripe.Product>|undefined
     let price: Stripe.Response<Stripe.Price>|undefined
     try {
-        const stripe = new Stripe(process.env.STRIPE_KEY!, {apiVersion: "2022-11-15"});
+        const stripe = new Stripe(stripeKey.value(), {apiVersion: "2022-11-15"});
         product = await stripe.products.create({
             id: change.id,
             name: `${data.type}_${data.uid}`,
@@ -56,7 +58,7 @@ exports.update = baseRef.onUpdate(async (change) => {
     if (dataAfter.monthlyPrice === dataBefore.monthlyPrice) return
     let price: Stripe.Response<Stripe.Price>|undefined
     try {
-        const stripe = new Stripe(process.env.STRIPE_KEY!, {apiVersion: "2022-11-15"});
+        const stripe = new Stripe(stripeKey.value(), {apiVersion: "2022-11-15"});
         await stripe.prices.update(dataBefore.stripePrice as string,{
             active: false,
         })
@@ -80,7 +82,7 @@ exports.update = baseRef.onUpdate(async (change) => {
 exports.delete = baseRef.onDelete(async (change) => {
     const data =  change.data() as MembershipTier
     if(!data.stripeProduct) return
-    const stripe = new Stripe(process.env.STRIPE_KEY!, {apiVersion: "2022-11-15"});
+    const stripe = new Stripe(stripeKey.value(), {apiVersion: "2022-11-15"});
     try {
         await stripe.prices.update(data.stripePrice as string,{
             active: false,
