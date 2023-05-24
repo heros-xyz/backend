@@ -17,16 +17,13 @@ export interface User {
 }
 
 async function sendEmail(email: string, secret: string) {
-  //TODO: Mover esto a secrets
-  sgMail.setApiKey(
-    "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"
-  );
+  sgMail.setApiKey(process.env.SENDGRID_KEY!);
   const msg = {
     to: email,
     from: {
       email: "hi@heros.xyz",
     },
-    templateId: "d-7aab392c1d28448990a112862eb96b8e",
+    templateId: process.env.SENDGRID_TEMPLATE_ID!,
     dynamicTemplateData: {
       otp: speakeasy.totp({
         secret: secret,
@@ -47,7 +44,7 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
   );
 });
 
-exports.signup = functions2.https.onCall(async (request: any) => {
+exports.signup = functions2.https.onCall({secrets: ["SENDGRID_KEY"]},async (request: any) => {
   const {email, profileType} = request.data;
   let user: admin.auth.UserRecord | false = await admin.auth().getUserByEmail(email).catch(() => false);
 
@@ -76,10 +73,15 @@ exports.signup = functions2.https.onCall(async (request: any) => {
     secret,
   });
 
-  await sendEmail(email, secret);
+  const otp = speakeasy.totp({
+    secret: secret,
+    encoding: "base32",
+  })
+
+  await sendEmail(email, otp, );
 });
 
-exports.signin = functions2.https.onCall(async (request: any) => {
+exports.signin = functions2.https.onCall({secrets: ["SENDGRID_KEY"]},async (request: any) => {
   const { email } = request.data;
   let userRecord: admin.auth.UserRecord;
   try {

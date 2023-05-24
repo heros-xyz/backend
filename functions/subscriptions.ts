@@ -29,9 +29,9 @@ export interface SubscriptionDoc {
   createdAt: Date;
 }
 
-const stripeSecret =
-  "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw";
-exports.create = functions.https.onCall(
+exports.create = functions.runWith({
+    secrets: ["STRIPE_KEY"]
+}).https.onCall(
   async (
     { paymentMethod, membershipTier }: SubscriptionCreateParams,
     context
@@ -63,7 +63,7 @@ exports.create = functions.https.onCall(
     if (!membershipTierData || !membershipTierData.stripeProduct)
       throw new functions.https.HttpsError("permission-denied", "product");
 
-    const stripe = new Stripe(stripeSecret, { apiVersion: "2022-11-15" });
+    const stripe = new Stripe(process.env.STRIPE_KEY!, { apiVersion: "2022-11-15" });
 
     const subscriptionDoc = await admin
       .firestore()
@@ -128,7 +128,9 @@ exports.create = functions.https.onCall(
   }
 );
 
-exports.delete = functions.https.onCall(
+exports.delete = functions.runWith({
+    secrets: ["STRIPE_KEY"]
+}).https.onCall(
   async (subscriptionId: string, context) => {
     const uid = context.auth?.uid;
     if (!uid) throw new functions.https.HttpsError("permission-denied", "uid");
@@ -142,7 +144,7 @@ exports.delete = functions.https.onCall(
     if (!subscriptionDocData || subscriptionDocData.taker !== uid)
       throw new functions.https.HttpsError("permission-denied", "subscription");
 
-    const stripe = new Stripe(stripeSecret, { apiVersion: "2022-11-15" });
+    const stripe = new Stripe(process.env.STRIPE_KEY!, { apiVersion: "2022-11-15" });
     await stripe.subscriptions.del(subscriptionDocData.stripeSubscription.id);
     return subscriptionDoc.ref.set(
       {
