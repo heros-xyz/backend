@@ -49,6 +49,18 @@ export interface Post {
   createdAt: Date;
 }
 
+export interface IComment {
+  id: string;
+  content: string;
+  userId: string;
+  createdAt: string | Date;
+}
+
+export interface IInteraction {
+  id: string;
+  content: string;
+}
+
 interface Notification {
   createdAt: Date;
   deletedAt?: Date;
@@ -57,7 +69,17 @@ interface Notification {
   eventType: NotificationEventType;
   status: NotificationStatusType;
   message?: string;
-  params?: any;
+  params?: {
+    interaction?: IInteraction;
+    comment?: IComment;
+  };
+  source?: {
+    // the user that trigger the notification
+    avatar: string;
+    fullName: string;
+    nickName: string;
+    id: string;
+  };
   to: string; // id to get the post comment or tier
   uid?: string;
 }
@@ -76,19 +98,54 @@ const refPost = functions.firestore.document("post/{docId}");
 exports.onPostCreate = refPost.onCreate(async (change) => {
   const onCreateData = change.data();
   const onCreateId = change.id;
-
   functions.logger.log("onPostUpdate", onCreateData);
-
   try {
+    // buscar todas las suscripciones activas de este atleta
+    const activeSubscriptions = (
+      await admin
+        .firestore()
+        .collection("subscriptions")
+        .where("maker", "==", onCreateData.uid)
+        .where("status", "==", SubscriptionStatus.ACTIVE)
+        .get()
+    ).docs.map((doc) => doc.data() as SubscriptionDoc);
+
+    const makerDoc = (
+      await admin.firestore().doc(`athleteProfile/${onCreateData.uid}`).get()
+    ).data();
     const params: Notification = {
       createdAt: new Date(),
       readAt: null,
-      type: "like",
+      type: "post",
       to: onCreateId,
+      params: {
+        interaction: {
+          id: onCreateId,
+          content: onCreateData.content,
+        },
+      },
+      source: {
+        id: onCreateData.uid,
+        avatar: makerDoc?.avatar,
+        fullName: makerDoc?.fullName,
+        nickName: makerDoc?.nickName,
+      },
+      uid: onCreateData.uid,
       status: NotificationStatusType.NOT_READ, // TODO: check this
-      eventType: NotificationEventType.ATHLETE_LIKE_INTERACTION,
+      eventType: NotificationEventType.ATHLETE_NEW_INTERACTION,
     };
-    await admin.firestore().collection("notification").add(params);
+
+    for (const subscription of activeSubscriptions) {
+      params.uid = subscription.taker;
+      await admin.firestore().collection("notification").add(params);
+    }
+
+    const makerRef = admin
+      .firestore()
+      .doc(`athleteProfile/${onCreateData.uid}`);
+    const makerRefData = (await makerRef.get()).data();
+    const count = (makerRefData?.totalInteractionCount ?? 0) + 1;
+    await makerRef.update({ totalInteractionCount: count });
   } catch (error) {
     functions.logger.error("[ERROR] onPostUpdate", error);
   }
@@ -117,7 +174,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
       await admin.firestore().doc(`user/${onCreateData.uid}`).get()
     ).data() as User;
 
-    let params: Notification|null = null
+    let params: Notification | null = null;
 
     // TODO: maybe switch statement?
     if (onCreateData.toType === "POST") {
@@ -170,8 +227,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
       }
     }
 
-    if (params)
-      await admin.firestore().collection("notification").add(params);
+    if (params) await admin.firestore().collection("notification").add(params);
   } catch (error) {
     functions.logger.error("[ERROR] onReactionCreate", error);
   }
@@ -277,8 +333,13 @@ exports.onSubscriptionUpdate = refSubscriptions.onUpdate(async (change) => {
       createdAt: new Date(),
       readAt: null,
       type: "subscription",
-      targetUser: afterData?.maker,
+      uid: afterData?.maker, // ATHLETE
       to: afterDataId,
+      source: {
+        avatar: afterData?.takerData?.avatar,
+        fullName: afterData?.takerData?.name,
+        id: afterData?.taker,
+      },
       status: NotificationStatusType.NOT_READ,
       eventType: NotificationEventType.FAN_SUBSCRIBE_ATHLETE,
     };

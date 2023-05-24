@@ -1,6 +1,8 @@
+import BigNumber from "bignumber.js";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import Stripe from "stripe";
+import { HEROS_PLATFORM_FEE } from "./constants/subscription";
 
 export enum SubscriptionStatus {
   DRAFT = 0,
@@ -29,7 +31,7 @@ async function updateFans(atlheteId: string) {
     .where("maker", "==", atlheteId)
     .where("status", "==", SubscriptionStatus.ACTIVE)
     .get();
-  //update Athlet
+  //update Athlete
   await admin.firestore().collection("athleteProfile").doc(atlheteId).update({
     totalSubCount: fansCount.docs.length,
   });
@@ -73,8 +75,8 @@ const events = {
         uid: userDoc.id,
       });
   },
-  "invoice.payment_succeeded": async (event: Stripe.Event.Data) => {
-    const data = event.object as Stripe.Invoice;
+  "invoice.payment_succeeded": async (event: Stripe.Event) => {
+    const data = event.data.object as Stripe.Invoice;
     const invoice = await admin
       .firestore()
       .collection("invoices")
@@ -82,16 +84,25 @@ const events = {
       .get();
     if (!invoice.exists)
       console.error("payment_succeeded - Unknown invoice", data);
-    return admin
-      .firestore()
-      .collection("invoices")
-      .doc(data.id)
-      .set(
-        {
-          ...data,
-        },
-        { merge: true }
-      );
+    const subscriptionId = getSubscriptionId(data);
+    const maker = subscriptionId?.split?.("_")[1];
+    const makerRef = await admin.firestore().doc(`user/${maker}`).get();
+    const makerData = makerRef?.data();
+    const currentAmount = makerData?.netAmount ?? 0;
+    const price = new BigNumber(invoice?.data?.()?.amount_paid);
+    const addAmount = price
+      .multipliedBy(new BigNumber(100).minus(new BigNumber(HEROS_PLATFORM_FEE)))
+      .dividedBy(100);
+    const currentAmountBig = new BigNumber(currentAmount);
+    const newNetAmount = currentAmountBig.plus(addAmount).toString();
+
+    const invoiceDocRef = admin.firestore().collection("invoices").doc(data.id);
+
+    return await admin.firestore().runTransaction(async (txn) => {
+      return txn
+        .update(makerRef.ref, { netAmount: newNetAmount })
+        .set(invoiceDocRef, { ...data }, { merge: true });
+    });
   },
   "invoice.payment_failed": async (event: Stripe.Event.Data) => {
     const data = event.object as Stripe.Invoice;
@@ -155,6 +166,7 @@ const events = {
       .collection("subscriptions")
       .doc(subscriptionId)
       .update({
+        autoRenew: false,
         status: SubscriptionStatus.CANCEL,
       });
     await updateFans(subscriptionId.split("_")[1]);

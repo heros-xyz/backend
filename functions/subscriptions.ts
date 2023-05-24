@@ -121,6 +121,7 @@ exports.create = functions.https.onCall(
         },
         status: SubscriptionStatus.DRAFT,
         autoRenew: true,
+        membershipName: membershipTierData.name,
       } as SubscriptionDoc,
       { merge: true }
     );
@@ -145,7 +146,6 @@ exports.delete = functions.https.onCall(
     await stripe.subscriptions.del(subscriptionDocData.stripeSubscription.id);
     return subscriptionDoc.ref.set(
       {
-        status: "cancel",
         autoRenew: false,
       },
       { merge: true }

@@ -6,3 +6,4 @@ dist/
 .idea
 /*.log
 ./emulators_base_data
+firestore-debug.log
