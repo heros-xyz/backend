@@ -49,35 +49,20 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
 
 exports.signup = functions2.https.onCall(async (request: any) => {
   const {email, profileType} = request.data;
-  let user: admin.auth.UserRecord | undefined;
-  try {
-    user = await admin.auth().getUserByEmail(email);
-  } catch {
-    //
-  }
+  let user: admin.auth.UserRecord | false = await admin.auth().getUserByEmail(email).catch(() => false);
 
-  if(user) {
+  if(user!==false){
     throw new functions.https.HttpsError(
         "already-exists",
         "USER_ALREADY_REGISTERED"
     );
   }
 
-  try {
-    user = await admin.auth().createUser({
-      email: email,
-      emailVerified: false,
-      disabled: false,
-    });
-  } catch (error: Error) {
-    if (error.code !== "auth/email-already-exists") {
-      throw new functions.https.HttpsError(
-        "already-exists",
-        "USER_ALREADY_REGISTERED"
-      );
-    }
-    throw error
-  }
+  user = await admin.auth().createUser({
+    email: email,
+    emailVerified: false,
+    disabled: false,
+  });
 
   // Crear el secreto OTP
   const { base32: secret } = speakeasy.generateSecret({ length: 20 });
