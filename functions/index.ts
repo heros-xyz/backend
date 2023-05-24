@@ -11,3 +11,4 @@ exports.notifications = require("./notifications");
 exports.stripe = require("./stripe");
 exports.reactions = require("./reactions");
 exports.withdrawal = require("./withdrawal");
+exports.comments = require("./comments");
