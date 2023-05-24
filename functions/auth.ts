@@ -45,50 +45,24 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
     },
     { merge: true }
   );
-
-  await admin
-    .firestore()
-    .collection("athleteProfile")
-    .doc(user.uid)
-    .set({}, { merge: true });
-
-  await admin
-    .firestore()
-    .collection("fanProfile")
-    .doc(user.uid)
-    .set({}, { merge: true });
 });
 
 exports.signup = functions2.https.onCall(async (request: any) => {
-  const { email, profileType } = request.data;
-  let user: admin.auth.UserRecord | null;
-  user = await admin
-    .auth()
-    .getUserByEmail(email)
-    .catch(() => {
-      return null;
-    });
+  const {email, profileType} = request.data;
+  let user: admin.auth.UserRecord | false = await admin.auth().getUserByEmail(email).catch(() => false);
 
-  try {
-    if (user) {
-      throw new functions2.https.HttpsError(
+  if(user!==false){
+    throw new functions.https.HttpsError(
         "already-exists",
         "USER_ALREADY_REGISTERED"
-      );
-    }
-    user = await admin.auth().createUser({
-      email: email,
-      emailVerified: false,
-      disabled: false,
-    });
-  } catch (error: any) {
-    if (error.code !== "auth/email-already-exists") {
-      throw new functions.https.HttpsError(
-        "already-exists",
-        "USER_ALREADY_REGISTERED"
-      );
-    }
+    );
   }
+
+  user = await admin.auth().createUser({
+    email: email,
+    emailVerified: false,
+    disabled: false,
+  });
 
   // Crear el secreto OTP
   const { base32: secret } = speakeasy.generateSecret({ length: 20 });

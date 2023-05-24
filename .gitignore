@@ -5,5 +5,5 @@ data-path/
 dist/
 .idea
 /*.log
-./emulators_base_data
+emulators_data/
 firestore-debug.log

@@ -196,7 +196,7 @@ export const webhook = functions.https.onRequest((req, res) => {
     );
   } catch (err: any) {
     console.error("Error processing event", err);
-    res.status(400).send();
+    res.json({ received: true });
     return;
   }
 
