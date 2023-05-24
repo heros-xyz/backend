@@ -143,7 +143,18 @@ exports.delete = functions.https.onCall(
       throw new functions.https.HttpsError("permission-denied", "subscription");
 
     const stripe = new Stripe(stripeSecret, { apiVersion: "2022-11-15" });
-    await stripe.subscriptions.del(subscriptionDocData.stripeSubscription.id);
+
+    const params: Stripe.SubscriptionUpdateParams = {
+      cancel_at_period_end: true, // Cancelar la suscripción al final del período actual
+      proration_behavior: "none", // Evitar reembolsos o créditos por tiempo no utilizado
+      billing_cycle_anchor: "unchanged", // Mantener la fecha de finalización existente
+    };
+
+    await stripe.subscriptions.update(
+      subscriptionDocData.stripeSubscription.id,
+      params
+    );
+
     return subscriptionDoc.ref.set(
       {
         autoRenew: false,

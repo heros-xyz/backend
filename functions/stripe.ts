@@ -140,9 +140,10 @@ const events = {
   },
   "customer.subscription.updated": async (event: Stripe.Event.Data) => {
     const data = event.object as Stripe.Subscription;
+    functions.logger.log("customer.subscription.updated", data);
     const subscriptionId = data.metadata.subscriptionId;
     if (!subscriptionId) {
-      console.error("payment_failed-Unknown subscription", data);
+      console.error("customer.subscription.updated subscription", data);
       return;
     }
     await admin
@@ -158,7 +159,7 @@ const events = {
     const metadata = data.object?.metadata;
     const subscriptionId = metadata?.subscriptionId as string;
     if (!subscriptionId) {
-      console.error("payment_failed-Unknown subscription", data);
+      console.error("customer.subscription.deleted subscription", data);
       return;
     }
     await admin
