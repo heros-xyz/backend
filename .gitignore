@@ -7,3 +7,4 @@ dist/
 /*.log
 emulators_data/
 firestore-debug.log
+.secret.local
