@@ -184,11 +184,12 @@ export const webhook = functions.https.onRequest((req, res) => {
     );
   } catch (err: any) {
     console.error("Error processing event", err);
-    res.status(400).send();
+    res.json({ received: true });
     return;
   }
 
   if (Object.keys(events).includes(event.type)) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const call = events[event.type](event) as Promise<void>;
     call.then(() => res.json({ received: true }));

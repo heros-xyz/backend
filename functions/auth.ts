@@ -45,43 +45,38 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
     },
     { merge: true }
   );
-
-  await admin
-    .firestore()
-    .collection("athleteProfile")
-    .doc(user.uid)
-    .set({}, { merge: true });
-
-  await admin
-    .firestore()
-    .collection("fanProfile")
-    .doc(user.uid)
-    .set({}, { merge: true });
 });
 
 exports.signup = functions2.https.onCall(async (request: any) => {
-  const { email, profileType } = request.data;
-  let user: admin.auth.UserRecord;
-  user = await admin.auth().getUserByEmail(email);
+  const {email, profileType} = request.data;
+  let user: admin.auth.UserRecord | undefined;
   try {
-    if (user) {
-      throw new functions2.https.HttpsError(
+    user = await admin.auth().getUserByEmail(email);
+  } catch {
+    //
+  }
+
+  if(user) {
+    throw new functions.https.HttpsError(
         "already-exists",
         "USER_ALREADY_REGISTERED"
-      );
-    }
+    );
+  }
+
+  try {
     user = await admin.auth().createUser({
       email: email,
       emailVerified: false,
       disabled: false,
     });
-  } catch (error: any) {
+  } catch (error: Error) {
     if (error.code !== "auth/email-already-exists") {
       throw new functions.https.HttpsError(
         "already-exists",
         "USER_ALREADY_REGISTERED"
       );
     }
+    throw error
   }
 
   // Crear el secreto OTP
