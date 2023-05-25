@@ -12,3 +12,4 @@ exports.stripe = require("./stripe");
 exports.reactions = require("./reactions");
 exports.withdrawal = require("./withdrawal");
 exports.comments = require("./comments");
+exports.post = require("./post");
