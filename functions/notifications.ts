@@ -231,6 +231,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
   } catch (error) {
     functions.logger.error("[ERROR] onReactionCreate", error);
   }
+  return
 });
 
 export interface Comment {
