@@ -20,19 +20,17 @@ export interface User {
   stripeCustomer: string;
 }
 
-async function sendEmail(email: string, secret: string) {
+async function sendEmail(email: string, otp: string) {
   sgMail.setApiKey(sendgridSecret.value());
-  const msg = {
+  const msg : sgMail.MailDataRequired = {
     to: email,
     from: {
       email: "hi@heros.xyz",
+      name: "Heros.xyz"
     },
     templateId: sendgridTemplateId.value(),
     dynamicTemplateData: {
-      otp: speakeasy.totp({
-        secret: secret,
-        encoding: "base32",
-      }),
+      otp,
     },
   };
   await sgMail.send(msg);
@@ -53,6 +51,7 @@ exports.signup = functions2.https.onCall({secrets: [sendgridSecret]},async (requ
   let user: admin.auth.UserRecord | false = await admin.auth().getUserByEmail(email).catch(() => false);
 
   if(user!==false){
+    console.log({user})
     throw new functions.https.HttpsError(
         "already-exists",
         "USER_ALREADY_REGISTERED"
@@ -82,7 +81,7 @@ exports.signup = functions2.https.onCall({secrets: [sendgridSecret]},async (requ
     encoding: "base32",
   })
 
-  await sendEmail(email, otp, );
+  await sendEmail(email, otp);
 });
 
 exports.signin = functions2.https.onCall({secrets: [sendgridSecret]},async (request: any) => {
@@ -105,8 +104,12 @@ exports.signin = functions2.https.onCall({secrets: [sendgridSecret]},async (requ
   }
 
   const { secret } = otpDoc.data() as { secret: string };
+  const otp = speakeasy.totp({
+    secret: secret,
+    encoding: "base32",
+  })
 
-  await sendEmail(email, secret);
+  await sendEmail(email, otp);
 });
 
 exports.verify = functions2.https.onCall(async (req: any) => {
