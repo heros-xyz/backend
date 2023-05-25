@@ -1,4 +1,9 @@
 # Node.js dependency directory
 node_modules/
+data-path/
+.vscode/
 dist/
 .idea
+/*.log
+emulators_data/
+firestore-debug.log

@@ -10,7 +10,7 @@ yarn
 yarn dev
 
 # build for production and launch server
-npm run watch | firebase emulators:start --only auth,firestore,functions,hosting,pubsub,storage --inspect-functions --import=./data-path --export-on-exit --project heros-dev-386505
+`FIRESTORE_EMULATOR_HOST="localhost:8080" fireway migrate --require="ts-node/register"  --forceWait``
 ```
 
 ```bash

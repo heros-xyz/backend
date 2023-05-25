@@ -1,6 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // [READ] Data that exists on the Firestore document
+    function existingData() {
+      return resource.data;
+    }
+    // [WRITE] Data that is sent to a Firestore document
+    function incomingData() {
+      return request.resource.data;
+    }
     function isAuthenticated(){
       return request.auth!=null
     }
@@ -8,7 +16,14 @@ service cloud.firestore {
       return (isAuthenticated() && request.auth.uid==uid)
     }
     function isAuthenticatedWithUids(uids){
-      return request.auth.uid in uids;
+      return uids != null && request.auth.uid in uids && uids[request.auth.uid] != null;
+    }
+    function isAuthenticatedAs(type){
+      return get(/databases/$(database)/documents/user/$(request.auth.uid)).data.profileType == type;
+    }
+    function hasActiveSubscription(subscriptionId){
+      // subscriptions/<FAN_ATHLETE>
+      return get(/databases/$(database)/documents/subscriptions/$(subscriptionId)).data.status == 1;
     }
     function hasAnyRoles(roles){
       return request.auth.token.roles.hasAny(roles);
@@ -25,42 +40,45 @@ service cloud.firestore {
       allow write: if false;
     }
     match /membershipTiers/{document=**} {
-      allow read:  if isAuthenticated();
+      allow read: if  true; // TODO: check how to handle this for public page
       allow write: if isAuthenticatedWithUid(resource.data.uid) && notTouchFields(['stripeProduct', 'stripePrice']);
     }
-    match /reaction/{id} {
+    match /reactions/{id} {
       allow read: if isAuthenticated();
       allow delete: if isAuthenticatedWithUid(resource.data.uid);
       allow create: if isAuthenticatedWithUid(request.resource.data.uid) && id == resource.data.uid+'_'+resource.data.to;
     }
     match /comments/{id} {
-      allow read: if isAuthenticatedWithUid(resource.data.postMaker) || get(/databases/$(database)/documents/subscription/$(request.auth.uid+'_'+resource.data.postMaker)).stripeSubscription != null;
+        allow read: if isAuthenticatedWithUid(resource.data.postMaker) || get(/databases/$(database)/documents/subscriptions/$(request.auth.uid+'_'+resource.data.postMaker)).stripeSubscription != null;
+    }
+    match /post/{id} {
+        allow write: if isAuthenticatedAs("ATHLETE") 
+        allow read: if isAuthenticatedAs("ATHLETE") || hasActiveSubscription(request.auth.uid+'_'+resource.data.uid);
     }
     match /fanProfile/{uid} {
-      allow read:  if isAuthenticated();
       allow write: if isAuthenticatedWithUid(uid);
     }
     match /athleteProfile/{uid} {
-      allow read:  if isAuthenticated();
+      allow read:  if true; // Public profile
       allow write: if isAuthenticatedWithUid(uid);
     }
     match /careerJourneys/{id} {
-      allow read:  if isAuthenticated();
+      allow read:  if true; // Public data
       allow create: if isAuthenticatedWithUid(request.resource.data.uid);
       allow update, delete: if isAuthenticatedWithUid(resource.data.uid);
     }
     // Private
     match /paymentMethods/{document=**} {
       allow read:  if isAuthenticatedWithUid(resource.data.uid);
-      allow create: if isAuthenticatedWithUid(request.resource.data.uid) && notTouchFields(['stripePayment']);
+      allow create: if isAuthenticatedWithUid(request.resource.data.uid); //&& notTouchFields(['stripePayment']);
       allow update: if isAuthenticatedWithUid(resource.data.uid) && notTouchFields(['stripePayment']);
     }
     match /user/{uid} {
       allow read:  if isAuthenticatedWithUid(uid);
-      allow write: if isAuthenticatedWithUid(uid) && notTouchFields(['stripeCustomer']);
+      allow write: if isAuthenticatedWithUid(uid) && notTouchFields(['stripeCustomer','netAmount']);
     }
-    match /subscription/{id}{
-      allow read:  if isAuthenticatedWithUids([resource.data.maker,resource.data.taker]);
+    match /subscriptions/{document=**} {
+      allow read:  if  resource.data.maker == request.auth.uid || resource.data.taker == request.auth.uid;
     }
     match /withdrawal/{id}{
       allow read: if isAuthenticatedWithUid(resource.data.uid);
@@ -71,7 +89,7 @@ service cloud.firestore {
     }
     // Default
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }

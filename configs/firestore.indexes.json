@@ -1,4 +1,20 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionId": "post",
+      "fields": [
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "publicDate", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionId": "notification",
+      "fields": [
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
