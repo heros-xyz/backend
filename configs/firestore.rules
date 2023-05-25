@@ -80,8 +80,12 @@ service cloud.firestore {
     match /subscriptions/{document=**} {
       allow read:  if  resource.data.maker == request.auth.uid || resource.data.taker == request.auth.uid;
     }
-    match /withdrawalRequests/{id}{
-      allow read, create: if isAuthenticatedWithUid(request.resource.data.uid);
+    match /withdrawal/{id}{
+      allow read: if isAuthenticatedWithUid(resource.data.uid);
+      allow create: if isAuthenticatedWithUid(request.resource.data.uid);
+    }
+    match /invoice/{id}{
+      allow read: if isAuthenticatedWithUid(resource.data.uid);
     }
     // Default
     match /{document=**} {
