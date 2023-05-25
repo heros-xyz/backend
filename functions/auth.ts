@@ -17,6 +17,18 @@ export interface User {
   stripeCustomer: string;
 }
 
+export interface AthleteProfile {
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  nickName?: string;
+  postsDates: {
+    id: string;
+    date: admin.firestore.Timestamp;
+  }[];
+}
+
 async function sendEmail(email: string, secret: string) {
   //TODO: Mover esto a secrets
   sgMail.setApiKey(
