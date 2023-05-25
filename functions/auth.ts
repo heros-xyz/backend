@@ -46,12 +46,16 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
   );
 });
 
-exports.signup = functions2.https.onCall({secrets: [sendgridSecret]},async (request: any) => {
+interface SignupRequest {
+  email: string;
+  profileType: "FAN" | "ATHLETE" | "ADMIN";
+}
+
+exports.signup = functions2.https.onCall<SignupRequest>({secrets: [sendgridSecret]},async (request) => {
   const {email, profileType} = request.data;
   let user: admin.auth.UserRecord | false = await admin.auth().getUserByEmail(email).catch(() => false);
 
   if(user!==false){
-    console.log({user})
     throw new functions.https.HttpsError(
         "already-exists",
         "USER_ALREADY_REGISTERED"
@@ -84,7 +88,11 @@ exports.signup = functions2.https.onCall({secrets: [sendgridSecret]},async (requ
   await sendEmail(email, otp);
 });
 
-exports.signin = functions2.https.onCall({secrets: [sendgridSecret]},async (request: any) => {
+
+interface SigninRequest {
+    email: string;
+}
+exports.signin = functions2.https.onCall<SigninRequest>({secrets: [sendgridSecret]},async (request) => {
   const { email } = request.data;
   let userRecord: admin.auth.UserRecord;
   try {
@@ -112,7 +120,11 @@ exports.signin = functions2.https.onCall({secrets: [sendgridSecret]},async (requ
   await sendEmail(email, otp);
 });
 
-exports.verify = functions2.https.onCall(async (req: any) => {
+interface VerifyRequest {
+    email: string;
+    otp: string;
+}
+exports.verify = functions2.https.onCall<VerifyRequest>(async (req) => {
   const { email, otp } = req.data;
   let userRecord: admin.auth.UserRecord;
   try {
