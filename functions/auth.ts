@@ -15,9 +15,22 @@ export interface User {
   firstName: string;
   lastName: string;
   fullName: string;
+  nickName?: string;
   email: string;
   profileType: "FAN" | "ATHLETE" | "ADMIN";
   stripeCustomer: string;
+}
+
+export interface AthleteProfile {
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  nickName?: string;
+  postsDates: {
+    id: string;
+    date: admin.firestore.Timestamp;
+  }[];
 }
 
 async function sendEmail(email: string, otp: string) {

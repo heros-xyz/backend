@@ -75,9 +75,9 @@ interface Notification {
   };
   source?: {
     // the user that trigger the notification
-    avatar: string;
-    fullName: string;
-    nickName: string;
+    avatar: string | null;
+    fullName: string | null;
+    nickName: string | null;
     id: string;
   };
   to: string; // id to get the post comment or tier
@@ -183,21 +183,35 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
         await admin.firestore().doc(`post/${onCreateData.to}`).get()
       ).data() as Post;
 
-      if (userMaker?.profileType === "ATHLETE") {
+      // FAN_LIKE_INTERACTION = "F_LIKE_INTERACTION", // A fan likes an athlete's interactions
+      if (userMaker?.profileType === "FAN" && onCreateData.type_ === "LIKE") {
         params = {
           createdAt: new Date(),
+          eventType: NotificationEventType.FAN_LIKE_INTERACTION,
           readAt: null,
           type: "post",
-          to: onCreateId,
+          status: NotificationStatusType.NOT_READ,
           uid: post.uid,
-          message: "notification.from-athlete.like.interaction",
-          status: NotificationStatusType.NOT_READ, // TODO: check this
-          eventType: NotificationEventType.ATHLETE_LIKE_INTERACTION,
+          to: onCreateId,
+          source: {
+            avatar: userMaker.avatar || null,
+            fullName: userMaker?.fullName || userMaker?.nickName || null,
+            id: onCreateData.uid,
+            nickName: userMaker?.nickName || null,
+          },
+          params: {
+            interaction: {
+              id: onCreateData?.to,
+              content: post?.content ?? "",
+            },
+          },
         };
+
+        return await admin.firestore().collection("notification").add(params);
       }
     }
 
-    if (onCreateData.toType === "COMMENT") {
+    if (onCreateData.toType === "COMMENT" && onCreateData.type_ === "LIKE") {
       //ATHLETE_LIKE_COMMENT = "A_LIKE_COMMENT", // An athlete likes fan's comment
       const comment = (
         await admin.firestore().doc(`comments/${onCreateData.to}`).get()
@@ -223,6 +237,12 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
           uid: commentMaker.uid,
           status: NotificationStatusType.NOT_READ, // TODO: check this
           eventType: NotificationEventType.ATHLETE_LIKE_COMMENT,
+          source: {
+            avatar: userMaker.avatar || null,
+            fullName: userMaker?.fullName || userMaker?.nickName || null,
+            id: onCreateData.uid,
+            nickName: userMaker?.nickName || null,
+          },
         };
       }
     }
