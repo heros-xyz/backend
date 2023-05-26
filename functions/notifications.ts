@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { SubscriptionStatus, SubscriptionDoc } from "./subscriptions";
-import {CollectionPath, User} from "./types";
+import { CollectionPath, Comment, User } from "./types";
 
 export enum NotificationEventType {
   FAN_SUBSCRIBE_ATHLETE = "F_SUBSCRIBE", // A fan subscribes to an athlete's tier
@@ -171,7 +171,11 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
 
   try {
     const userMaker = (
-      await admin.firestore().collection(CollectionPath.USER).doc(onCreateData.uid).get()
+      await admin
+        .firestore()
+        .collection(CollectionPath.USER)
+        .doc(onCreateData.uid)
+        .get()
     ).data() as User;
 
     let params: Notification | null = null;
@@ -220,7 +224,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
       const commentMaker = (
         await admin
           .firestore()
-          .doc(`user/${comment.uid}`)
+          .doc(`user/${comment.author}`)
           .withConverter(converter)
           .get()
       ).data() as User;
@@ -251,23 +255,8 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
   } catch (error) {
     functions.logger.error("[ERROR] onReactionCreate", error);
   }
-  return
+  return;
 });
-
-export interface Comment {
-  id?: string;
-  createdAt: Date;
-  deletedAt: Date;
-  content: string;
-  post: string;
-  uid: string;
-  parent?: string;
-  //calcular
-  isLiked?: boolean;
-  likeCount?: number;
-  commentsCount?: number;
-  isAuthorComment?: boolean;
-}
 
 const refComments = functions.firestore.document("comments/{docId}");
 
@@ -277,70 +266,75 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
   functions.logger.log("onCommentCreate", onCreateData);
 
   try {
-    const userMaker = (
-      await admin.firestore().doc(`user/${onCreateData.uid}`).get()
+    const author = (
+      await admin.firestore().doc(`user/${onCreateData.author}`).get()
     ).data() as User;
 
-    let params: Notification;
-
-    // TODO: maybe switch statement?
-    if (userMaker?.profileType === "ATHLETE") {
-      const isReply = !!onCreateData.parent;
-      if (isReply) {
-        const parentComment = (
-          await admin.firestore().doc(`comments/${onCreateData.parent}`).get()
-        ).data() as Comment;
-
-        const parentCommentMaker = (
-          await admin
-            .firestore()
-            .doc(`user/${parentComment.uid}`)
-            .withConverter(converter)
-            .get()
-        ).data() as User;
-
-        if (parentCommentMaker.profileType === "FAN") {
-          // ATHLETE_REPLY_COMMENT = "A_REPLY_COMMENT", // An athlete replies to fan's comment
-          params = {
-            createdAt: new Date(),
-            readAt: null,
-            type: "comment",
-            uid: parentCommentMaker.uid,
-            to: onCreateData.post, // this should be the post
-            status: NotificationStatusType.NOT_READ, // TODO: check this
-            eventType: NotificationEventType.ATHLETE_REPLY_COMMENT,
-          };
-        }
-      }
-
-      const post = (
-        await admin.firestore().doc(`post/${onCreateData.post}`).get()
-      ).data() as Post;
-
-      const postMaker = (
+    // isReply
+    if (onCreateData.parent) {
+      const parentComment = (
         await admin
           .firestore()
-          .doc(`user/${post.uid}`)
-          .withConverter(converter)
+          .collection(CollectionPath.COMMENTS)
+          .doc(onCreateData.parent)
           .get()
-      ).data() as User;
+      ).data() as Comment;
 
-      // ATHLETE_COMMENT_INTERACTION = "A_COMMENT_INTERACTION", // An athlete comments an interaction
-      params = {
-        createdAt: new Date(),
-        readAt: null,
-        type: "comment",
-        uid: postMaker.uid,
-        to: onCreateData.post, // this should be the post
-        status: NotificationStatusType.NOT_READ, // TODO: check this
-        eventType: NotificationEventType.ATHLETE_COMMENT_INTERACTION,
-      };
+      if (parentComment.author === onCreateData.author) return;
 
-      await admin.firestore().collection("notification").add(params);
+      return await admin
+        .firestore()
+        .collection(CollectionPath.NOTIFICATIONS)
+        .add({
+          createdAt: new Date(),
+          readAt: null,
+          type: "comment",
+          uid: parentComment?.author, //
+          to: change.id,
+          source: {
+            avatar: onCreateData.authorProfile.avatar,
+            fullName: onCreateData.authorProfile.fullName,
+            id: onCreateData.author,
+          },
+          status: NotificationStatusType.NOT_READ,
+          eventType:
+            author.profileType === "ATHLETE"
+              ? NotificationEventType.ATHLETE_REPLY_COMMENT
+              : NotificationEventType.FAN_REPLY_FAN_COMMENT,
+        } as Notification);
+    }
+
+    //   FAN_COMMENT_INTERACTION = "F_COMMENT_INTERACTION", // A fan comments on an athlete's interaction
+    if (author.profileType === "FAN") {
+      const post = (
+        await admin
+          .firestore()
+          .doc(`${CollectionPath.POSTS}/${onCreateData.post}`)
+          .get()
+      ).data() as Post;
+
+      return await admin
+        .firestore()
+        .collection(CollectionPath.NOTIFICATIONS)
+        .add({
+          createdAt: new Date(),
+          readAt: null,
+          type: "comment",
+          uid: post.uid, // ATHLETE
+          to: change.id,
+          source: {
+            avatar: author.avatar,
+            fullName: author.fullName,
+            id: author.uid,
+          },
+          eventType: NotificationEventType.FAN_COMMENT_INTERACTION,
+          status: NotificationStatusType.NOT_READ,
+        } as Notification);
     }
   } catch (error) {
     functions.logger.error("[ERROR] onCommentCreate", error);
   }
+  return null;
 });
 
 const refSubscriptions = functions.firestore.document("subscriptions/{docId}");

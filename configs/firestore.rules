@@ -10,7 +10,7 @@ service cloud.firestore {
       return request.resource.data;
     }
     function isAuthenticated(){
-      return request.auth!=null
+      return request.auth != null;
     }
     function isAuthenticatedWithUid(uid){
       return (isAuthenticated() && request.auth.uid==uid)
@@ -48,12 +48,15 @@ service cloud.firestore {
       allow delete: if isAuthenticatedWithUid(resource.data.uid);
       allow create: if isAuthenticatedWithUid(request.resource.data.uid) && id == resource.data.uid+'_'+resource.data.to;
     }
-    match /comments/{id} {
-        allow read: if isAuthenticatedWithUid(resource.data.postMaker) || get(/databases/$(database)/documents/subscriptions/$(request.auth.uid+'_'+resource.data.postMaker)).stripeSubscription != null;
+    match /comments/{document=**} {
+        allow read: if isAuthenticatedWithUid(resource.data.author); //|| get(/databases/$(database)/documents/subscriptions/$(request.auth.uid+'_'+resource.data.postMaker)).stripeSubscription != null;
     }
     match /post/{id} {
         allow write: if isAuthenticatedAs("ATHLETE") 
         allow read: if isAuthenticatedAs("ATHLETE") || hasActiveSubscription(request.auth.uid+'_'+resource.data.uid);
+    }
+    match /notification/{id} {
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.uid; 
     }
     match /fanProfile/{uid} {
       allow write: if isAuthenticatedWithUid(uid);
