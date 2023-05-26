@@ -2,8 +2,8 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import Stripe from "stripe";
 import { PaymentMethod } from "./paymentMethod";
-import { User } from "./auth";
 import { MembershipTier } from "./membershipTiers";
+import {User} from "./types";
 
 const stripeKey = functions.params.defineSecret("STRIPE_KEY")
 

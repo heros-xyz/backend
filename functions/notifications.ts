@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
-import { User } from "./auth";
 import { SubscriptionStatus, SubscriptionDoc } from "./subscriptions";
+import {CollectionPath, User} from "./types";
 
 export enum NotificationEventType {
   FAN_SUBSCRIBE_ATHLETE = "F_SUBSCRIBE", // A fan subscribes to an athlete's tier
@@ -171,7 +171,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
 
   try {
     const userMaker = (
-      await admin.firestore().doc(`user/${onCreateData.uid}`).get()
+      await admin.firestore().collection(CollectionPath.USER).doc(onCreateData.uid).get()
     ).data() as User;
 
     let params: Notification | null = null;

@@ -4,34 +4,12 @@ import * as functions from "firebase-functions";
 import * as functions2 from "firebase-functions/v2";
 import * as speakeasy from "speakeasy";
 import sgMail from "@sendgrid/mail";
+import {SigninRequest, SignupRequest, VerifyRequest} from "./types";
+
 const sendgridSecret = functions.params.defineSecret("SENDGRID_KEY");
 const sendgridTemplateId = functions.params.defineString("SENDGRID_TEMPLATE_ID", {
   description: "Sendgrid template id",
 });
-
-export interface User {
-  uid: string;
-  avatar: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  nickName?: string;
-  email: string;
-  profileType: "FAN" | "ATHLETE" | "ADMIN";
-  stripeCustomer: string;
-}
-
-export interface AthleteProfile {
-  avatar: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  nickName?: string;
-  postsDates: {
-    id: string;
-    date: admin.firestore.Timestamp;
-  }[];
-}
 
 async function sendEmail(email: string, otp: string) {
   sgMail.setApiKey(sendgridSecret.value());
@@ -58,11 +36,6 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
     { merge: true }
   );
 });
-
-interface SignupRequest {
-  email: string;
-  profileType: "FAN" | "ATHLETE" | "ADMIN";
-}
 
 exports.signup = functions2.https.onCall<SignupRequest>({secrets: [sendgridSecret]},async (request) => {
   const {email, profileType} = request.data;
@@ -102,9 +75,6 @@ exports.signup = functions2.https.onCall<SignupRequest>({secrets: [sendgridSecre
 });
 
 
-interface SigninRequest {
-    email: string;
-}
 exports.signin = functions2.https.onCall<SigninRequest>({secrets: [sendgridSecret]},async (request) => {
   const { email } = request.data;
   let userRecord: admin.auth.UserRecord;
@@ -133,10 +103,6 @@ exports.signin = functions2.https.onCall<SigninRequest>({secrets: [sendgridSecre
   await sendEmail(email, otp);
 });
 
-interface VerifyRequest {
-    email: string;
-    otp: string;
-}
 exports.verify = functions2.https.onCall<VerifyRequest>(async (req) => {
   const { email, otp } = req.data;
   let userRecord: admin.auth.UserRecord;
