@@ -224,7 +224,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
       const commentMaker = (
         await admin
           .firestore()
-          .doc(`user/${comment.uid}`)
+          .doc(`user/${comment.author}`)
           .withConverter(converter)
           .get()
       ).data() as User;
