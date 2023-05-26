@@ -2,7 +2,8 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import Stripe from "stripe";
 
-const stripeSecret  = "sk_test_51N3iHSIaE495kvrkHHOlGMunzqORnjPCBQImK4D4PccKWmG05QtvdlZleNEi7aS95IodbtAPvjm7LCVNF3EnFymz002NyQmytw"
+const stripeKey = functions.params.defineSecret("STRIPE_KEY");
+
 interface PrePaymentMethod {
     cardNumber: string
     cardExpMonth: number
@@ -16,7 +17,9 @@ export interface PaymentMethod {
     uid: string
 }
 
-const ref = functions.firestore.document("paymentMethods/{docId}")
+const ref = functions.runWith({
+    secrets: [stripeKey]
+}).firestore.document("paymentMethods/{docId}")
 
 exports.create = ref.onCreate(async (change) => {
     const data = change.data() as PrePaymentMethod
@@ -26,7 +29,7 @@ exports.create = ref.onCreate(async (change) => {
     const customer = userDoc?.data()?.stripeCustomer
     if(!customer) return
 
-    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
+    const stripe = new Stripe(stripeKey.value(), {apiVersion: "2022-11-15"});
     return stripe.paymentMethods.create({
         type: "card",
         card: {
@@ -57,7 +60,7 @@ exports.create = ref.onCreate(async (change) => {
 exports.delete = ref.onDelete((change)=>{
     const data = change.data() as PaymentMethod
     if (!data.stripePayment) return
-    const stripe = new Stripe(stripeSecret, {apiVersion: "2022-11-15"});
+    const stripe = new Stripe(stripeKey.value(), {apiVersion: "2022-11-15"});
     return stripe.paymentMethods.detach(data.stripePayment.id, {
         idempotencyKey: `payment_detach_${change.id}`
     })

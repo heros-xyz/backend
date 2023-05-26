@@ -1,13 +1,15 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import {CollectionPath} from "./types";
 
 const refReactions = functions.firestore.document("reactions/{docId}");
 
-async function updateReactionsCount(to: string, toType: string) {
+async function updateReactionsCount(to: string, toType: CollectionPath) {
     const reactions = await admin.firestore().collection("reactions")
         .where("to", "==", to)
         .get()
-    await admin.firestore().collection(toType.toLowerCase()).doc(to).update({
+    console.log({to, toType})
+    await admin.firestore().collection(toType).doc(to).update({
         reactionsCount: reactions.docs.length
     })
 }

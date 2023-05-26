@@ -4,47 +4,24 @@ import * as functions from "firebase-functions";
 import * as functions2 from "firebase-functions/v2";
 import * as speakeasy from "speakeasy";
 import sgMail from "@sendgrid/mail";
+import {SigninRequest, SignupRequest, VerifyRequest} from "./types";
 
-export interface User {
-  uid: string;
-  avatar: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  nickName?: string;
-  email: string;
-  profileType: "FAN" | "ATHLETE" | "ADMIN";
-  stripeCustomer: string;
-}
+const sendgridSecret = functions.params.defineSecret("SENDGRID_KEY");
+const sendgridTemplateId = functions.params.defineString("SENDGRID_TEMPLATE_ID", {
+  description: "Sendgrid template id",
+});
 
-export interface AthleteProfile {
-  avatar: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  nickName?: string;
-  postsDates: {
-    id: string;
-    date: admin.firestore.Timestamp;
-  }[];
-}
-
-async function sendEmail(email: string, secret: string) {
-  //TODO: Mover esto a secrets
-  sgMail.setApiKey(
-    "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"
-  );
-  const msg = {
+async function sendEmail(email: string, otp: string) {
+  sgMail.setApiKey(sendgridSecret.value());
+  const msg : sgMail.MailDataRequired = {
     to: email,
     from: {
       email: "hi@heros.xyz",
+      name: "Heros.xyz"
     },
-    templateId: "d-7aab392c1d28448990a112862eb96b8e",
+    templateId: sendgridTemplateId.value(),
     dynamicTemplateData: {
-      otp: speakeasy.totp({
-        secret: secret,
-        encoding: "base32",
-      }),
+      otp,
     },
   };
   await sgMail.send(msg);
@@ -60,7 +37,7 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
   );
 });
 
-exports.signup = functions2.https.onCall(async (request: any) => {
+exports.signup = functions2.https.onCall<SignupRequest>({secrets: [sendgridSecret]},async (request) => {
   const {email, profileType} = request.data;
   let user: admin.auth.UserRecord | false = await admin.auth().getUserByEmail(email).catch(() => false);
 
@@ -89,10 +66,16 @@ exports.signup = functions2.https.onCall(async (request: any) => {
     secret,
   });
 
-  await sendEmail(email, secret);
+  const otp = speakeasy.totp({
+    secret: secret,
+    encoding: "base32",
+  })
+
+  await sendEmail(email, otp);
 });
 
-exports.signin = functions2.https.onCall(async (request: any) => {
+
+exports.signin = functions2.https.onCall<SigninRequest>({secrets: [sendgridSecret]},async (request) => {
   const { email } = request.data;
   let userRecord: admin.auth.UserRecord;
   try {
@@ -112,11 +95,15 @@ exports.signin = functions2.https.onCall(async (request: any) => {
   }
 
   const { secret } = otpDoc.data() as { secret: string };
+  const otp = speakeasy.totp({
+    secret: secret,
+    encoding: "base32",
+  })
 
-  await sendEmail(email, secret);
+  await sendEmail(email, otp);
 });
 
-exports.verify = functions2.https.onCall(async (req: any) => {
+exports.verify = functions2.https.onCall<VerifyRequest>(async (req) => {
   const { email, otp } = req.data;
   let userRecord: admin.auth.UserRecord;
   try {

@@ -1,12 +1,6 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
-
-export interface WithdrawalRequest {
-  bankName: string;
-  cardNumber: string;
-  swiftCode: string;
-  uid: string;
-}
+import {WithdrawalRequest} from "./types";
 
 const refWithdrawal = functions.firestore.document(
   "withdrawalRequests/{docId}"

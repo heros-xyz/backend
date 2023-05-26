@@ -1,7 +1,8 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { Post } from "./notifications";
-import { AthleteProfile } from "./auth";
+
+import {AthleteProfile} from "./types";
 
 const refPosts = functions.firestore.document("post/{docId}");
 
