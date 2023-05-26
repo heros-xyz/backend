@@ -334,6 +334,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
   } catch (error) {
     functions.logger.error("[ERROR] onCommentCreate", error);
   }
+  return null;
 });
 
 const refSubscriptions = functions.firestore.document("subscriptions/{docId}");
