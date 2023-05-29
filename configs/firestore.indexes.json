@@ -15,6 +15,34 @@
       ]
     },
     {
+      "collectionGroup": "comments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "post",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "athleteProfile",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isFinishOnboarding",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "totalSubCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "post",
       "queryScope": "COLLECTION",
       "fields": [
