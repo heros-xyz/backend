@@ -1,15 +1,15 @@
 {
   "indexes": [
     {
-      "collectionGroup": "notification",
+      "collectionGroup": "athleteProfile",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "uid",
+          "fieldPath": "isFinishOnboarding",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdAt",
+          "fieldPath": "totalSubCount",
           "order": "DESCENDING"
         }
       ]
@@ -29,15 +29,33 @@
       ]
     },
     {
-      "collectionGroup": "athleteProfile",
+      "collectionGroup": "notification",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "isFinishOnboarding",
+          "fieldPath": "uid",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "totalSubCount",
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "post",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "tags",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
           "order": "DESCENDING"
         }
       ]
