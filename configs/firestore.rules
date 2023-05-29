@@ -34,6 +34,10 @@ service cloud.firestore {
     function notTouchFields(fields){
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields)
     }
+    function canSeeComment(){
+      let postUid = get(/databases/$(database)/documents/post/$(resource.data.post)).data.uid;
+      return isAuthenticatedAs("ATHLETE") ||  hasActiveSubscription(request.auth.uid+'_'+postUid);
+    }
     // Public
     match /public/{document=**} {
       allow read: if isAuthenticated();
@@ -46,10 +50,11 @@ service cloud.firestore {
     match /reactions/{id} {
       allow read: if isAuthenticated();
       allow delete: if isAuthenticatedWithUid(resource.data.uid);
-      allow create: if isAuthenticatedWithUid(request.resource.data.uid) && id == resource.data.uid+'_'+resource.data.to;
+      allow create: if isAuthenticatedWithUid(request.resource.data.uid) && id == request.resource.data.uid+'_'+request.resource.data.to;
     }
-    match /comments/{document=**} {
-        allow read: if isAuthenticatedWithUid(resource.data.author); //|| get(/databases/$(database)/documents/subscriptions/$(request.auth.uid+'_'+resource.data.postMaker)).stripeSubscription != null;
+    match /comments/{id} {
+        allow read: if canSeeComment();
+        allow create: if false;
     }
     match /post/{id} {
         allow write: if isAuthenticatedAs("ATHLETE") 
@@ -60,6 +65,8 @@ service cloud.firestore {
     }
     match /fanProfile/{uid} {
       allow write: if isAuthenticatedWithUid(uid);
+      allow update: if isAuthenticatedWithUid(uid);
+      allow read: if isAuthenticatedWithUid(uid);
     }
     match /athleteProfile/{uid} {
       allow read:  if true; // Public profile
@@ -83,16 +90,16 @@ service cloud.firestore {
     match /subscriptions/{document=**} {
       allow read:  if  resource.data.maker == request.auth.uid || resource.data.taker == request.auth.uid;
     }
-    match /withdrawal/{id}{
+    match /withdrawalRequests/{id}{
       allow read: if isAuthenticatedWithUid(resource.data.uid);
-      allow create: if isAuthenticatedWithUid(request.resource.data.uid);
+      allow create: if isAuthenticatedAs("ATHLETE");
     }
     match /invoice/{id}{
       allow read: if isAuthenticatedWithUid(resource.data.uid);
     }
     // Default
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }
