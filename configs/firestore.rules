@@ -62,6 +62,7 @@ service cloud.firestore {
     }
     match /notification/{id} {
       allow read: if isAuthenticated() && request.auth.uid == resource.data.uid;
+      allow update: if isAuthenticated() && request.auth.uid == resource.data.uid;
     }
     match /fanProfile/{uid} {
       allow write: if isAuthenticatedWithUid(uid);
