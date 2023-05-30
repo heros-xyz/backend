@@ -52,8 +52,8 @@ export interface Post {
 export interface IComment {
   id: string;
   content: string;
-  userId: string;
-  createdAt: string | Date;
+  userId?: string;
+  createdAt?: string | Date;
 }
 
 export interface IInteraction {
@@ -152,7 +152,7 @@ exports.onPostCreate = refPost.onCreate(async (change) => {
 });
 
 export type ReactionType = "LIKE";
-export type ToType = "POST" | "COMMENT";
+export type ToType = "post" | "comments";
 export interface Reaction {
   id?: string;
   type_: ReactionType;
@@ -180,12 +180,17 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
 
     let params: Notification | null = null;
 
+    const post = (
+      await admin
+        .firestore()
+        .doc(`post/${onCreateData.to}`)
+        .withConverter(converter)
+        .get()
+    ).data() as Post;
+
     // TODO: maybe switch statement?
-    if (onCreateData.toType === "POST") {
+    if (onCreateData.toType === "post") {
       // ATHLETE_LIKE_INTERACTION = "A_LIKE_INTERACTION", // TODO: An athlete like an interaction
-      const post = (
-        await admin.firestore().doc(`post/${onCreateData.to}`).get()
-      ).data() as Post;
 
       // FAN_LIKE_INTERACTION = "F_LIKE_INTERACTION", // A fan likes an athlete's interactions
       if (userMaker?.profileType === "FAN" && onCreateData.type_ === "LIKE") {
@@ -215,10 +220,14 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
       }
     }
 
-    if (onCreateData.toType === "COMMENT" && onCreateData.type_ === "LIKE") {
+    if (onCreateData.toType === "comments" && onCreateData.type_ === "LIKE") {
       //ATHLETE_LIKE_COMMENT = "A_LIKE_COMMENT", // An athlete likes fan's comment
       const comment = (
-        await admin.firestore().doc(`comments/${onCreateData.to}`).get()
+        await admin
+          .firestore()
+          .doc(`comments/${onCreateData.to}`)
+          .withConverter(converter)
+          .get()
       ).data() as Comment;
 
       const commentMaker = (
@@ -241,6 +250,16 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
           uid: commentMaker.uid,
           status: NotificationStatusType.NOT_READ, // TODO: check this
           eventType: NotificationEventType.ATHLETE_LIKE_COMMENT,
+          params: {
+            interaction: {
+              id: post.id ?? "",
+              content: post.content ?? "",
+            },
+            comment: {
+              id: comment?.id ?? "",
+              content: comment.content ?? "",
+            },
+          },
           source: {
             avatar: userMaker.avatar || null,
             fullName: userMaker?.fullName || userMaker?.nickName || null,
@@ -267,8 +286,20 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
 
   try {
     const author = (
-      await admin.firestore().doc(`user/${onCreateData.author}`).get()
+      await admin
+        .firestore()
+        .doc(`user/${onCreateData.author}`)
+        .withConverter(converter)
+        .get()
     ).data() as User;
+
+    const post = (
+      await admin
+        .firestore()
+        .doc(`${CollectionPath.POSTS}/${onCreateData.post}`)
+        .withConverter(converter)
+        .get()
+    ).data() as Post;
 
     // isReply
     if (onCreateData.parent) {
@@ -293,8 +324,18 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
           to: change.id,
           source: {
             avatar: onCreateData.authorProfile.avatar,
-            fullName: onCreateData.authorProfile.fullName,
+            fullName: author?.nickName || author.fullName,
             id: onCreateData.author,
+          },
+          params: {
+            interaction: {
+              id: post?.id,
+              content: post?.content ?? "",
+            },
+            comment: {
+              id: change.id,
+              content: onCreateData?.content ?? "",
+            },
           },
           status: NotificationStatusType.NOT_READ,
           eventType:
@@ -306,13 +347,6 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
 
     //   FAN_COMMENT_INTERACTION = "F_COMMENT_INTERACTION", // A fan comments on an athlete's interaction
     if (author.profileType === "FAN") {
-      const post = (
-        await admin
-          .firestore()
-          .doc(`${CollectionPath.POSTS}/${onCreateData.post}`)
-          .get()
-      ).data() as Post;
-
       return await admin
         .firestore()
         .collection(CollectionPath.NOTIFICATIONS)
@@ -324,8 +358,18 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
           to: change.id,
           source: {
             avatar: author.avatar,
-            fullName: author.fullName,
-            id: author.uid,
+            fullName: author?.nickName || author.fullName,
+            id: onCreateData.author,
+          },
+          params: {
+            interaction: {
+              id: post?.id,
+              content: post?.content ?? "",
+            },
+            comment: {
+              id: change.id,
+              content: onCreateData?.content ?? "",
+            },
           },
           eventType: NotificationEventType.FAN_COMMENT_INTERACTION,
           status: NotificationStatusType.NOT_READ,

@@ -31,15 +31,16 @@ export interface FanProfile {
 }
 
 export interface User {
-    uid: string;
-    avatar: string;
-    firstName: string;
-    lastName: string;
-    fullName: string;
-    nickName?: string;
-    email: string;
-    profileType: "FAN" | "ATHLETE" | "ADMIN";
-    stripeCustomer: string;
+  id: string;
+  uid: string;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  nickName?: string;
+  email: string;
+  profileType: "FAN" | "ATHLETE" | "ADMIN";
+  stripeCustomer: string;
 }
 
 export interface AthleteProfile {
@@ -69,16 +70,17 @@ export interface VerifyRequest {
 }
 
 export interface Comment {
-    post: string
-    content: string
-    parent?: string
-    author: string
-    authorProfile: FanProfile | AthleteProfile
-    authorProfileCollection: CollectionPath
-    commentsCount: number
-    reactionsCount: number
-    createdAt: Timestamp
-    deletedAt?: Timestamp
+  id: string;
+  post: string;
+  content: string;
+  parent?: string;
+  author: string;
+  authorProfile: FanProfile | AthleteProfile;
+  authorProfileCollection: CollectionPath;
+  commentsCount: number;
+  reactionsCount: number;
+  createdAt: Timestamp;
+  deletedAt?: Timestamp;
 }
 
 export interface CommentRequest {
