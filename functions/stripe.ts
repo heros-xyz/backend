@@ -205,7 +205,9 @@ export const webhook = functions.runWith({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const call = events[event.type](event) as Promise<void>;
-    call.then(() => res.json({ received: true }));
+    call.catch((error)=>{
+        console.error("Error processing event", event.type, error);
+    }).finally(() => res.json({ received: true }));
   } else {
     console.log("Unexpected event", event.type);
     res.json({ received: true });

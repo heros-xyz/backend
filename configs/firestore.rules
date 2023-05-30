@@ -57,11 +57,11 @@ service cloud.firestore {
         allow create: if false;
     }
     match /post/{id} {
-        allow write: if isAuthenticatedAs("ATHLETE") 
+        allow write: if isAuthenticatedAs("ATHLETE")
         allow read: if isAuthenticatedAs("ATHLETE") || hasActiveSubscription(request.auth.uid+'_'+resource.data.uid);
     }
     match /notification/{id} {
-      allow read: if isAuthenticated() && request.auth.uid == resource.data.uid; 
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.uid;
     }
     match /fanProfile/{uid} {
       allow write: if isAuthenticatedWithUid(uid);
