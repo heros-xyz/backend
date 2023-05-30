@@ -70,7 +70,7 @@ export interface VerifyRequest {
 }
 
 export interface Comment {
-  id: string;
+  id?: string;
   post: string;
   content: string;
   parent?: string;
