@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
+import * as functions2 from "firebase-functions/v2";
 import Stripe from "stripe";
 import { PaymentMethod } from "./paymentMethod";
 import { MembershipTier } from "./membershipTiers";
@@ -31,19 +32,16 @@ export interface SubscriptionDoc {
   createdAt: Date;
 }
 
-exports.create = functions.runWith({
+exports.create = functions2.https.onCall<SubscriptionCreateParams>({
     secrets: [stripeKey]
-}).https.onCall(
-  async (
-    { paymentMethod, membershipTier }: SubscriptionCreateParams,
-    context
-  ) => {
-    const uid = context.auth?.uid;
+},
+  async (request) => {
+    const uid = request.auth?.uid;
     if (!uid) throw new functions.https.HttpsError("permission-denied", "uid");
 
     const paymentMethodDoc = await admin
       .firestore()
-      .doc(`paymentMethods/${paymentMethod}`)
+      .doc(`paymentMethods/${request.data.paymentMethod}`)
       .get();
     const paymentMethodDocData = paymentMethodDoc.data() as PaymentMethod;
     if (!paymentMethodDocData || paymentMethodDocData.uid !== uid)
@@ -59,7 +57,7 @@ exports.create = functions.runWith({
 
     const membershipTierDoc = await admin
       .firestore()
-      .doc(`membershipTiers/${membershipTier}`)
+      .doc(`membershipTiers/${request.data.membershipTier}`)
       .get();
     const membershipTierData = membershipTierDoc.data() as MembershipTier;
     if (!membershipTierData || !membershipTierData.stripeProduct)
@@ -130,17 +128,21 @@ exports.create = functions.runWith({
   }
 );
 
-exports.delete = functions.runWith({
+interface DeleteParams {
+    subscriptionId: string;
+}
+
+exports.delete = functions2.https.onCall<DeleteParams>({
     secrets: ["STRIPE_KEY"]
-}).https.onCall(
-  async (subscriptionId: string, context) => {
-    const uid = context.auth?.uid;
+},
+  async (request) => {
+    const uid = request.auth?.uid;
     if (!uid) throw new functions.https.HttpsError("permission-denied", "uid");
 
     const subscriptionDoc = await admin
       .firestore()
       .collection("subscriptions")
-      .doc(subscriptionId)
+      .doc(request.data.subscriptionId)
       .get();
     const subscriptionDocData = subscriptionDoc.data() as SubscriptionDoc;
     if (!subscriptionDocData || subscriptionDocData.taker !== uid)

@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import * as admin from "firebase-admin";
-import * as functions from "firebase-functions";
+// eslint-disable-next-line import/no-unresolved
+import * as functions from "firebase-functions/v2";
 import Stripe from "stripe";
 import { HEROS_PLATFORM_FEE } from "./constants/subscription";
 
@@ -179,9 +180,9 @@ const events = {
     "invoice.paid"*/
 };
 
-export const webhook = functions.runWith({
+export const webhook = functions.https.onRequest({
   secrets: [stripeKey,stripeKeyWebhook]
-}).https.onRequest((req, res) => {
+}, (req, res) => {
   const stripe = new Stripe(stripeKey.value(), { apiVersion: "2022-11-15" });
   const sig = req.headers["stripe-signature"];
   if (!sig) {
@@ -205,11 +206,12 @@ export const webhook = functions.runWith({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const call = events[event.type](event) as Promise<void>;
-    call.catch((error)=>{
-        console.error("Error processing event", event.type, error);
-    }).finally(() => res.json({ received: true }));
+    call.then(() => res.json({ received: true }))
+        .catch((error)=>{
+          throw new functions.https.HttpsError("unknown", "Error processing event", error);
+        });
   } else {
     console.log("Unexpected event", event.type);
-    res.json({ received: true });
+    res.json({ received: true })
   }
 });
