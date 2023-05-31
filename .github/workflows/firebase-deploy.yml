@@ -25,5 +25,5 @@ jobs:
         run: npm install
 
       - name: Deploy to Firebase
-        run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --project heros-dev-386505
+        run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }} --project heros-dev-386505
 
