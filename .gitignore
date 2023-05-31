@@ -8,3 +8,4 @@ dist/
 emulators_data/
 firestore-debug.log
 .secret.local
+.docker
