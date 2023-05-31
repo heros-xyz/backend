@@ -34,6 +34,9 @@ service cloud.firestore {
     function notTouchFields(fields){
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields)
     }
+    function requestNotContainFields(fields){
+      return !request.resource.data.keys().hasAny(fields)
+    }
     function canSeeComment(){
       let postUid = get(/databases/$(database)/documents/post/$(resource.data.post)).data.uid;
       return isAuthenticatedAs("ATHLETE") ||  hasActiveSubscription(request.auth.uid+'_'+postUid);
@@ -44,8 +47,9 @@ service cloud.firestore {
       allow write: if false;
     }
     match /membershipTiers/{document=**} {
-      allow read: if  true; // TODO: check how to handle this for public page
-      allow write: if isAuthenticatedWithUid(resource.data.uid) && notTouchFields(['stripeProduct', 'stripePrice']);
+      allow read: if  true;
+      allow create: if isAuthenticatedWithUid(incomingData().uid) && requestNotContainFields(['stripeProduct', 'stripePrice']);
+      allow update: if isAuthenticatedWithUid(existingData().uid) && notTouchFields(['stripeProduct', 'stripePrice']);
     }
     match /reactions/{id} {
       allow read: if isAuthenticated();
@@ -81,7 +85,7 @@ service cloud.firestore {
     // Private
     match /paymentMethods/{document=**} {
       allow read:  if isAuthenticatedWithUid(resource.data.uid);
-      allow create: if isAuthenticatedWithUid(request.resource.data.uid); //&& notTouchFields(['stripePayment']);
+      allow create: if isAuthenticatedWithUid(request.resource.data.uid) && requestNotContainFields(['stripePayment']);
       allow update: if isAuthenticatedWithUid(resource.data.uid) && notTouchFields(['stripePayment']);
     }
     match /user/{uid} {
