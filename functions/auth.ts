@@ -32,6 +32,7 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
   await admin.firestore().collection("user").doc(user.uid).set(
     {
       email: user.email,
+      netAmount: 0
     },
     { merge: true }
   );

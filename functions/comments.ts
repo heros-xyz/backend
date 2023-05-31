@@ -17,7 +17,7 @@ const refComments = functions.firestore.document("comments/{docId}");
 async function updateCommentsCount(postId: string) {
   const comments = await admin
     .firestore()
-    .collection(CollectionPath.COMMENTS)
+    .collection(CollectionPath.comments)
     .where("post", "==", postId)
     .get();
   console.log({ postId, c: comments.docs })
@@ -37,18 +37,18 @@ exports.create = functions2.https.onCall<CommentRequest>(async request=>{
   const {post, content, parent} = request.data;
   let authorProfile: FanProfile | AthleteProfile
   let authorProfileCollection: CollectionPath
-  let  doc = await admin.firestore().collection(CollectionPath.FAN_PROFILE).doc(request.auth.uid).get()
+  let  doc = await admin.firestore().collection(CollectionPath.fanProfile).doc(request.auth.uid).get()
     if(doc.exists){
         authorProfile = doc.data() as FanProfile
-        authorProfileCollection = CollectionPath.FAN_PROFILE
+        authorProfileCollection = CollectionPath.fanProfile
     }
     else{
-        doc = await admin.firestore().collection(CollectionPath.ATHLETE_PROFILE).doc(request.auth.uid).get()
+        doc = await admin.firestore().collection(CollectionPath.athleteProfile).doc(request.auth.uid).get()
         if(!doc.exists){
             throw new functions.https.HttpsError("not-found", "User profile not found")
         }
         authorProfile = doc.data() as AthleteProfile
-        authorProfileCollection = CollectionPath.ATHLETE_PROFILE
+        authorProfileCollection = CollectionPath.athleteProfile
     }
 
   const comment: Comment = {
