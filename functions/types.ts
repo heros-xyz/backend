@@ -2,19 +2,33 @@ import {Timestamp} from "firebase-admin/lib/firestore";
 import * as admin from "firebase-admin";
 
 export enum CollectionPath {
-    NOTIFICATIONS = "notification",
-    ATHLETE_PROFILE = "athleteProfile",
-    COMMENTS = "comments",
-    USER = "user",
-    POSTS = "post",
-    FAN_PROFILE = "fanProfile"
+    notification = "notification",
+    athleteProfile = "athleteProfile",
+    comments = "comments",
+    user = "user",
+    post = "post",
+    fanProfile = "fanProfile",
+    invoices = "invoices",
+    withdrawal = "withdrawal"
 }
 
 export interface WithdrawalRequest {
     bankName: string;
     cardNumber: string;
     swiftCode: string;
+}
+
+export enum OperationStatus {
+    pending = "pending",
+    processing = "processing",
+    succeed = "succeed",
+    fail = "fail"
+}
+
+export interface Withdrawal extends WithdrawalRequest{
     uid: string;
+    amount: number;
+    status: OperationStatus
 }
 
 export interface FanProfile {
@@ -41,6 +55,7 @@ export interface User {
   email: string;
   profileType: "FAN" | "ATHLETE" | "ADMIN";
   stripeCustomer: string;
+  netAmount: number;
 }
 
 export interface AthleteProfile {
