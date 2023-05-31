@@ -15,7 +15,7 @@ export async function getPost(id: string): Promise<Post | null> {
   try {
     const post = await admin
       .firestore()
-      .collection(CollectionPath.POSTS)
+      .collection(CollectionPath.post)
       .doc(id)
       .withConverter(converter)
       .get();
