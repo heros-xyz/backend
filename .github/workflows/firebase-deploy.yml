@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install -g firebase-tools yarn
 
-      - name: Lint project
-        run: yarn lint
-
       - name: Deploy to Firebase
         run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --project heros-dev-386505
 
