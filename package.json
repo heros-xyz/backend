@@ -15,7 +15,7 @@
     "deploy": "firebase deploy --only functions --project heros-dev-386505",
     "logs": "firebase functions:log",
     "emulators": "tsc -w | firebase emulators:start --only auth,firestore,functions,storage --inspect-functions  --project heros-dev-386505 --import emulators_base_data --export-on-exit",
-    "emulators:only": "firebase emulators:start --only auth,firestore,functions,storage --inspect-functions  --project heros-dev-386505 --import emulators_base_data --export-on-exit"
+    "emulators:only": "firebase emulators:start --only auth,firestore,functions,storage --inspect-functions  --project heros-dev-386505 --import emulators_data"
   },
   "engines": {
     "node": "18"

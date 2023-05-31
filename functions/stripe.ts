@@ -1,8 +1,10 @@
 import BigNumber from "bignumber.js";
 import * as admin from "firebase-admin";
-import * as functions from "firebase-functions";
+// eslint-disable-next-line import/no-unresolved
+import * as functions from "firebase-functions/v2";
 import Stripe from "stripe";
 import { HEROS_PLATFORM_FEE } from "./constants/subscription";
+import {CollectionPath} from "./types";
 
 const stripeKey = functions.params.defineSecret("STRIPE_KEY");
 const stripeKeyWebhook = functions.params.defineSecret("STRIPE_KEY_WEBHOOK");
@@ -82,29 +84,34 @@ const events = {
     const data = event.data.object as Stripe.Invoice;
     const invoice = await admin
       .firestore()
-      .collection("invoices")
+      .collection(CollectionPath.invoices)
       .doc(data.id)
       .get();
-    if (!invoice.exists)
-      console.error("payment_succeeded - Unknown invoice", data);
+    if (!invoice.exists){
+      console.error("payment_succeeded - Unknown invoice", data.id);
+      return
+    }
     const subscriptionId = getSubscriptionId(data);
-    const maker = subscriptionId?.split?.("_")[1];
-    const makerRef = await admin.firestore().doc(`user/${maker}`).get();
-    const makerData = makerRef?.data();
-    const currentAmount = makerData?.netAmount ?? 0;
-    const price = new BigNumber(invoice?.data?.()?.amount_paid);
-    const addAmount = price
-      .multipliedBy(new BigNumber(100).minus(new BigNumber(HEROS_PLATFORM_FEE)))
-      .dividedBy(100);
-    const currentAmountBig = new BigNumber(currentAmount);
-    const newNetAmount = currentAmountBig.plus(addAmount).toString();
+    const makerId = subscriptionId?.split?.("_")[1];
+    if (!makerId){
+      console.error("payment_succeeded - Unknown maker", data.id);
+      return
+    }
+    const makerRef = admin.firestore().collection(CollectionPath.user).doc(makerId)
+    const makerDoc = await makerRef.get()
+    if (!makerDoc.exists){
+      console.error("payment_succeeded - Unknown maker", data.id);
+      return
+    }
+    const price = (new BigNumber(data.amount_paid)).dividedBy(100);
+    const addAmount = price.multipliedBy(new BigNumber(100).minus(new BigNumber(HEROS_PLATFORM_FEE))).dividedBy(100);
 
     const invoiceDocRef = admin.firestore().collection("invoices").doc(data.id);
 
     return await admin.firestore().runTransaction(async (txn) => {
       return txn
-        .update(makerRef.ref, { netAmount: newNetAmount })
-        .set(invoiceDocRef, { ...data }, { merge: true });
+        .update(makerRef, { netAmount: admin.firestore.FieldValue.increment(addAmount.toNumber()) })
+        .set(invoiceDocRef, data, { merge: true });
     });
   },
   "invoice.payment_failed": async (event: Stripe.Event.Data) => {
@@ -179,9 +186,9 @@ const events = {
     "invoice.paid"*/
 };
 
-export const webhook = functions.runWith({
+export const webhook = functions.https.onRequest({
   secrets: [stripeKey,stripeKeyWebhook]
-}).https.onRequest((req, res) => {
+}, (req, res) => {
   const stripe = new Stripe(stripeKey.value(), { apiVersion: "2022-11-15" });
   const sig = req.headers["stripe-signature"];
   if (!sig) {
@@ -205,9 +212,12 @@ export const webhook = functions.runWith({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const call = events[event.type](event) as Promise<void>;
-    call.then(() => res.json({ received: true }));
+    call.then(() => res.json({ received: true }))
+        .catch((error)=>{
+          throw new functions.https.HttpsError("unknown", "Error processing event", error);
+        });
   } else {
     console.log("Unexpected event", event.type);
-    res.json({ received: true });
+    res.json({ received: true })
   }
 });

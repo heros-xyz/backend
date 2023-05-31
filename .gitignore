@@ -10,4 +10,5 @@ emulators_base_data/*
 firebase-export*
 firestore-debug.log
 .secret.local
+.docker
 .env

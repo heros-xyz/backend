@@ -178,7 +178,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
     const userMaker = (
       await admin
         .firestore()
-        .collection(CollectionPath.USER)
+        .collection(CollectionPath.user)
         .doc(onCreateData.uid)
         .withConverter(converter)
         .get()
@@ -343,7 +343,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
     const post = (
       await admin
         .firestore()
-        .doc(`${CollectionPath.POSTS}/${onCreateData.post}`)
+        .doc(`${CollectionPath.post}/${onCreateData.post}`)
         .withConverter(converter)
         .get()
     ).data() as Post;
@@ -353,7 +353,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
       const parentComment = (
         await admin
           .firestore()
-          .collection(CollectionPath.COMMENTS)
+          .collection(CollectionPath.comments)
           .doc(onCreateData.parent)
           .get()
       ).data() as Comment;
@@ -362,7 +362,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
 
       return await admin
         .firestore()
-        .collection(CollectionPath.NOTIFICATIONS)
+        .collection(CollectionPath.notification)
         .add({
           createdAt: new Date(),
           readAt: null,
@@ -396,7 +396,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
     if (author.profileType === "FAN") {
       return await admin
         .firestore()
-        .collection(CollectionPath.NOTIFICATIONS)
+        .collection(CollectionPath.notification)
         .add({
           createdAt: new Date(),
           readAt: null,
