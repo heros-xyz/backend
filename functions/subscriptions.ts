@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
-import * as functions from "firebase-functions";
 // eslint-disable-next-line import/no-unresolved
-import * as functions2 from "firebase-functions/v2";
+import * as functions from "firebase-functions/v2";
 import Stripe from "stripe";
 import { PaymentMethod } from "./paymentMethod";
 import { MembershipTier } from "./membershipTiers";
@@ -33,7 +32,7 @@ export interface SubscriptionDoc {
   createdAt: Date;
 }
 
-exports.create = functions2.https.onCall<SubscriptionCreateParams>({
+exports.create = functions.https.onCall<SubscriptionCreateParams>({
     secrets: [stripeKey]
 },
   async (request) => {
@@ -133,7 +132,7 @@ interface DeleteParams {
     subscriptionId: string;
 }
 
-exports.delete = functions2.https.onCall<DeleteParams>({
+exports.delete = functions.https.onCall<DeleteParams>({
     secrets: ["STRIPE_KEY"]
 },
   async (request) => {
