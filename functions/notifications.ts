@@ -246,7 +246,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
         const fanProfile = (
           await admin
             .firestore()
-            .doc(`${CollectionPath.FAN_PROFILE}/${userMaker.id}`)
+            .doc(`${CollectionPath.fanProfile}/${userMaker.id}`)
             .withConverter(converter)
             .get()
         ).data() as FanProfile;

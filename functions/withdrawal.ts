@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+// eslint-disable-next-line import/no-unresolved
 import * as functions from "firebase-functions/v2";
 import { CollectionPath, WithdrawalRequest, OperationStatus, User } from "./types";
 
