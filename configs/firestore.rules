@@ -91,9 +91,8 @@ service cloud.firestore {
     match /subscriptions/{document=**} {
       allow read:  if  resource.data.maker == request.auth.uid || resource.data.taker == request.auth.uid;
     }
-    match /withdrawalRequests/{id}{
+    match /withdrawal/{id}{
       allow read: if isAuthenticatedWithUid(resource.data.uid);
-      allow create: if isAuthenticatedAs("ATHLETE");
     }
     match /invoice/{id}{
       allow read: if isAuthenticatedWithUid(resource.data.uid);
