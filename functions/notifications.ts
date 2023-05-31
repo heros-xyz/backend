@@ -1,21 +1,28 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { SubscriptionStatus, SubscriptionDoc } from "./subscriptions";
-import { CollectionPath, Comment, User } from "./types";
+import {
+  AthleteProfile,
+  CollectionPath,
+  Comment,
+  FanProfile,
+  User,
+} from "./types";
+import { getPost } from "./utils";
 
 export enum NotificationEventType {
-  FAN_SUBSCRIBE_ATHLETE = "F_SUBSCRIBE", // A fan subscribes to an athlete's tier
-  FAN_LIKE_INTERACTION = "F_LIKE_INTERACTION", // A fan likes an athlete's interactions
-  FAN_COMMENT_INTERACTION = "F_COMMENT_INTERACTION", // A fan comments on an athlete's interaction
+  FAN_SUBSCRIBE_ATHLETE = "F_SUBSCRIBE", // A fan subscribes to an athlete's tier X
+  FAN_LIKE_INTERACTION = "F_LIKE_INTERACTION", // A fan likes an athlete's interactions X
+  FAN_COMMENT_INTERACTION = "F_COMMENT_INTERACTION", // A fan comments on an athlete's interaction X
   FAN_LIKE_COMMENT = "F_LIKE_COMMENT", // A fan likes an athlete's comment & A fan likes a comment's reply.
-  FAN_REPLY_COMMENT = "F_REPLY_COMMENT", // A fan replies to an athlete's comment
-  FAN_LIKE_REPLY = "F_LIKE_REPLY", // A fan replies to an athlete's comment
+  FAN_REPLY_COMMENT = "F_REPLY_COMMENT", // A fan replies to an athlete's comment X
+  FAN_LIKE_REPLY = "F_LIKE_REPLY", // A fan like replies to an athlete's comment
 
   ATHLETE_NEW_INTERACTION = "A_NEW_INTERACTION", // An athlete posts a new interaction X
   ATHLETE_LIKE_INTERACTION = "A_LIKE_INTERACTION", // TODO: An athlete like an interaction X
   ATHLETE_COMMENT_INTERACTION = "A_COMMENT_INTERACTION", // An athlete comments an interaction X
   ATHLETE_LIKE_COMMENT = "A_LIKE_COMMENT", // An athlete likes fan's comment X
-  ATHLETE_REPLY_COMMENT = "A_REPLY_COMMENT", // An athlete replies to fan's comment
+  ATHLETE_REPLY_COMMENT = "A_REPLY_COMMENT", // An athlete replies to fan's comment X
   ATHLETE_LIKE_REPLY = "A_LIKE_REPLY", // An athlete likes fan's comment's reply
 
   FAN_LIKE_FAN_COMMENT = "F_LIKE_F_COMMENT", // Another fan likes fan's comment
@@ -167,29 +174,21 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
   const onCreateData = change.data() as Reaction;
   const onCreateId = change.id;
 
-  functions.logger.log("onReactionCreate", onCreateData);
-
   try {
     const userMaker = (
       await admin
         .firestore()
         .collection(CollectionPath.USER)
         .doc(onCreateData.uid)
+        .withConverter(converter)
         .get()
     ).data() as User;
 
     let params: Notification | null = null;
 
-    const post = (
-      await admin
-        .firestore()
-        .doc(`post/${onCreateData.to}`)
-        .withConverter(converter)
-        .get()
-    ).data() as Post;
-
     // TODO: maybe switch statement?
     if (onCreateData.toType === "post") {
+      const post = await getPost(onCreateData.to);
       // ATHLETE_LIKE_INTERACTION = "A_LIKE_INTERACTION", // TODO: An athlete like an interaction
 
       // FAN_LIKE_INTERACTION = "F_LIKE_INTERACTION", // A fan likes an athlete's interactions
@@ -200,7 +199,7 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
           readAt: null,
           type: "post",
           status: NotificationStatusType.NOT_READ,
-          uid: post.uid,
+          uid: post?.uid,
           to: onCreateId,
           source: {
             avatar: userMaker.avatar || null,
@@ -238,22 +237,32 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
           .get()
       ).data() as User;
 
+      const post = await getPost(comment.post);
+
       if (
-        userMaker.profileType === "ATHLETE" &&
-        commentMaker.profileType === "FAN"
+        userMaker.profileType === "FAN" &&
+        commentMaker.profileType === "ATHLETE"
       ) {
+        const fanProfile = (
+          await admin
+            .firestore()
+            .doc(`${CollectionPath.FAN_PROFILE}/${userMaker.id}`)
+            .withConverter(converter)
+            .get()
+        ).data() as FanProfile;
+
         params = {
           createdAt: new Date(),
           readAt: null,
           type: "like",
           to: comment.post, // POST
-          uid: commentMaker.uid,
+          uid: commentMaker.id,
           status: NotificationStatusType.NOT_READ, // TODO: check this
-          eventType: NotificationEventType.ATHLETE_LIKE_COMMENT,
+          eventType: NotificationEventType.FAN_LIKE_COMMENT,
           params: {
             interaction: {
-              id: post.id ?? "",
-              content: post.content ?? "",
+              id: post?.id ?? "",
+              content: post?.content ?? "",
             },
             comment: {
               id: comment?.id ?? "",
@@ -261,10 +270,50 @@ exports.onReactionCreate = refReactions.onCreate(async (change) => {
             },
           },
           source: {
-            avatar: userMaker.avatar || null,
-            fullName: userMaker?.fullName || userMaker?.nickName || null,
+            avatar: fanProfile?.avatar || null,
+            fullName: fanProfile?.fullName || fanProfile?.nickName || null,
             id: onCreateData.uid,
-            nickName: userMaker?.nickName || null,
+            nickName: fanProfile?.nickName || null,
+          },
+        };
+      }
+
+      if (
+        userMaker.profileType === "ATHLETE" &&
+        commentMaker.profileType === "FAN"
+      ) {
+        const athleteProfile = (
+          await admin
+            .firestore()
+            .doc(`athleteProfile/${userMaker.id}`)
+            .withConverter(converter)
+            .get()
+        ).data() as AthleteProfile;
+
+        params = {
+          createdAt: new Date(),
+          readAt: null,
+          type: "like",
+          to: comment.post, // POST
+          uid: commentMaker.id,
+          status: NotificationStatusType.NOT_READ, // TODO: check this
+          eventType: NotificationEventType.ATHLETE_LIKE_COMMENT,
+          params: {
+            interaction: {
+              id: post?.id ?? "",
+              content: post?.content ?? "",
+            },
+            comment: {
+              id: comment?.id ?? "",
+              content: comment.content ?? "",
+            },
+          },
+          source: {
+            avatar: athleteProfile?.avatar || null,
+            fullName:
+              athleteProfile?.fullName || athleteProfile?.nickName || null,
+            id: onCreateData.uid,
+            nickName: athleteProfile?.nickName || null,
           },
         };
       }
@@ -281,8 +330,6 @@ const refComments = functions.firestore.document("comments/{docId}");
 
 exports.onCommentCreate = refComments.onCreate(async (change) => {
   const onCreateData = change.data() as Comment;
-
-  functions.logger.log("onCommentCreate", onCreateData);
 
   try {
     const author = (
@@ -324,7 +371,7 @@ exports.onCommentCreate = refComments.onCreate(async (change) => {
           to: change.id,
           source: {
             avatar: onCreateData.authorProfile.avatar,
-            fullName: author?.nickName || author.fullName,
+            fullName: author?.nickName || author?.fullName,
             id: onCreateData.author,
           },
           params: {
