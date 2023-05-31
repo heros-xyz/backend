@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
+// eslint-disable-next-line import/no-unresolved
 import * as functions2 from "firebase-functions/v2";
 import Stripe from "stripe";
 import { PaymentMethod } from "./paymentMethod";
